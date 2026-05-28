@@ -189,6 +189,177 @@
     "cache_hit": false
   },
   {
+    "thread_id": "run_20260528-200910_3f6d8323",
+    "source_id": "",
+    "started_at": "2026-05-28T20:10:25.203364+00:00",
+    "ended_at": "2026-05-28T20:10:25.203370+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 11137,
+    "total_output_tokens": 3933,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T20:09:10Z",
+        "ended_at": "2026-05-28T20:09:10Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T20:09:10Z",
+        "ended_at": "2026-05-28T20:09:28Z",
+        "duration_ms": 18354,
+        "llm_calls": 13,
+        "input_tokens": 9561,
+        "output_tokens": 3411,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T20:10:08Z",
+        "ended_at": "2026-05-28T20:10:25Z",
+        "duration_ms": 16478,
+        "llm_calls": 1,
+        "input_tokens": 1576,
+        "output_tokens": 522,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Backend Web Development Roadmap' extracted 1 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Internet Fundamentals' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-1"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Programming Language Foundations' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-2"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Version Control' extracted 3 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-3"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Databases' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-4"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'APIs' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-5"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Authentication and Authorization' extracted 12 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-6"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Caching' extracted 15 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-7"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Testing' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-8"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Containerization and Deployment' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-9"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Observability' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-10"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Scalability and Reliability' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-11"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Security' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-12"
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 12 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  },
+  {
     "thread_id": "run_20260528-194952_560b4a65",
     "source_id": "",
     "started_at": "2026-05-28T19:49:54.553547+00:00",

@@ -1,0 +1,744 @@
+{
+  "metadata": {
+    "thread_id": "run_20260528-200910_3f6d8323",
+    "source_id": "",
+    "started_at": "2026-05-28T20:10:25.203364+00:00",
+    "ended_at": "2026-05-28T20:10:25.203370+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 11137,
+    "total_output_tokens": 3933,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T20:09:10Z",
+        "ended_at": "2026-05-28T20:09:10Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T20:09:10Z",
+        "ended_at": "2026-05-28T20:09:28Z",
+        "duration_ms": 18354,
+        "llm_calls": 13,
+        "input_tokens": 9561,
+        "output_tokens": 3411,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T20:10:08Z",
+        "ended_at": "2026-05-28T20:10:25Z",
+        "duration_ms": 16478,
+        "llm_calls": 1,
+        "input_tokens": 1576,
+        "output_tokens": 522,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Backend Web Development Roadmap' extracted 1 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Internet Fundamentals' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-1"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Programming Language Foundations' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-2"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Version Control' extracted 3 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-3"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Databases' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-4"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'APIs' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-5"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Authentication and Authorization' extracted 12 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-6"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Caching' extracted 15 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-7"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Testing' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-8"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Containerization and Deployment' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-9"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Observability' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-10"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Scalability and Reliability' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-11"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Security' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-12"
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 12 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  },
+  "merged_topics": [
+    {
+      "id": "backend-web-development",
+      "name": "Backend Web Development",
+      "description": "A structured learning path for becoming a backend web developer.",
+      "category": "backend",
+      "difficulty": "beginner",
+      "source_section_id": "section-0"
+    },
+    {
+      "id": "how-the-internet-works",
+      "name": "How the Internet Works",
+      "description": "The TCP/IP stack, packet routing, DNS lookups, and request journey from browser to server and back.",
+      "category": "networking",
+      "difficulty": "beginner",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "http-and-https",
+      "name": "HTTP and HTTPS",
+      "description": "Methods, status codes, headers, request/response lifecycle, and differences between HTTP/1.1, HTTP/2, and HTTP/3.",
+      "category": "networking",
+      "difficulty": "intermediate",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "browsers",
+      "name": "Browsers",
+      "description": "What a browser does with a response, including parsing, rendering, and the request/response cycle.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "hosting",
+      "name": "Hosting",
+      "description": "DNS, domain registration, TLS certificates, and what a hosting provider provides.",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "syntax-and-control-flow",
+      "name": "Syntax and Control Flow",
+      "description": "Variables, conditionals, loops, functions, scoping rules",
+      "category": "programming-language-foundations",
+      "difficulty": "beginner",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "data-structures",
+      "name": "Data Structures",
+      "description": "Arrays, lists, sets, maps/dictionaries, stacks, queues, trees",
+      "category": "programming-language-foundations",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "object-oriented-programming",
+      "name": "Object-Oriented Programming",
+      "description": "Classes, objects, inheritance, polymorphism, encapsulation",
+      "category": "programming-language-foundations",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "functional-programming-concepts",
+      "name": "Functional Programming Concepts",
+      "description": "Immutability, pure functions, map/filter/reduce, higher-order functions",
+      "category": "programming-language-foundations",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "error-handling",
+      "name": "Error Handling",
+      "description": "Exceptions, error returns, when to catch versus when to propagate",
+      "category": "programming-language-foundations",
+      "difficulty": "beginner",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "description": "Git is a version control system that includes branches, commits, merges, rebases, and pull requests.",
+      "category": "version-control",
+      "difficulty": "beginner",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "remote-repositories",
+      "name": "Remote Repositories",
+      "description": "Remote repositories include GitHub, GitLab, and Bitbucket, and involve pushing, pulling, and code review workflows.",
+      "category": "version-control",
+      "difficulty": "intermediate",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "workflows",
+      "name": "Workflows",
+      "description": "Workflows include trunk-based development, Git Flow, and feature branches, and involve understanding which workflow fits which team size.",
+      "category": "version-control",
+      "difficulty": "intermediate",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "relational-databases",
+      "name": "Relational Databases",
+      "description": "SQL fundamentals, PostgreSQL, and MySQL",
+      "category": "database",
+      "difficulty": "beginner",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "nosql-databases",
+      "name": "NoSQL Databases",
+      "description": "Key-value stores, document stores, wide-column stores, and graph databases",
+      "category": "database",
+      "difficulty": "intermediate",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "database-design",
+      "name": "Database Design",
+      "description": "Normalization, primary keys, foreign keys, indexes, and query plans",
+      "category": "database",
+      "difficulty": "intermediate",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "orms",
+      "name": "ORMs",
+      "description": "Object-relational mappers like SQLAlchemy, Hibernate, and Sequelize",
+      "category": "database",
+      "difficulty": "intermediate",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "transactions",
+      "name": "Transactions",
+      "description": "ACID properties, isolation levels, deadlocks, and locking mechanisms",
+      "category": "database",
+      "difficulty": "advanced",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "rest",
+      "name": "REST",
+      "description": "Resource-oriented design, HTTP verbs, status codes, and content negotiation.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "graphql",
+      "name": "GraphQL",
+      "description": "Schema definition, queries, mutations, resolvers, and the n+1 problem.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "grpc",
+      "name": "gRPC",
+      "description": "Protocol buffers, RPC semantics, streaming, and binary protocols.",
+      "category": "backend",
+      "difficulty": "advanced",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "api-documentation",
+      "name": "API Documentation",
+      "description": "OpenAPI/Swagger, generating client libraries, and keeping docs in sync with code.",
+      "category": "backend",
+      "difficulty": "beginner",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "authentication-patterns",
+      "name": "Authentication Patterns",
+      "description": "Methods for verifying user identity, including session-based, token-based, and OAuth 2.0.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "password-storage",
+      "name": "Password Storage",
+      "description": "Secure methods for storing passwords, such as hashing with bcrypt or argon2.",
+      "category": "security",
+      "difficulty": "beginner",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "authorization-models",
+      "name": "Authorization Models",
+      "description": "Models for controlling access, including role-based and attribute-based access control.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "jwt",
+      "name": "JSON Web Tokens (JWT)",
+      "description": "A token-based authentication method.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "oauth-2-0",
+      "name": "OAuth 2.0",
+      "description": "An authorization framework.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "openid-connect",
+      "name": "OpenID Connect",
+      "description": "An authentication protocol.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "api-keys",
+      "name": "API Keys",
+      "description": "A method for authenticating API requests.",
+      "category": "security",
+      "difficulty": "beginner",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "mutual-tls",
+      "name": "Mutual TLS",
+      "description": "A method for authenticating API requests using TLS.",
+      "category": "security",
+      "difficulty": "advanced",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "bcrypt",
+      "name": "Bcrypt",
+      "description": "A password hashing algorithm.",
+      "category": "security",
+      "difficulty": "beginner",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "argon2",
+      "name": "Argon2",
+      "description": "A password hashing algorithm.",
+      "category": "security",
+      "difficulty": "beginner",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "rbac",
+      "name": "Role-Based Access Control (RBAC)",
+      "description": "A model for controlling access based on user roles.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "abac",
+      "name": "Attribute-Based Access Control (ABAC)",
+      "description": "A model for controlling access based on user attributes.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "in-memory-caches",
+      "name": "In-Memory Caches",
+      "description": "Using tools like Redis and Memcached for caching, including TTLs and eviction policies.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "cdn-caching",
+      "name": "CDN Caching",
+      "description": "Using edge caching, cache headers, and surrogate keys for caching.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "application-level-caching",
+      "name": "Application-Level Caching",
+      "description": "Using memoization, query result caches, and cache-aside and read-through patterns for caching.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "description": "An in-memory data store used for caching.",
+      "category": "backend",
+      "difficulty": "beginner",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "memcached",
+      "name": "Memcached",
+      "description": "A high-performance caching system.",
+      "category": "backend",
+      "difficulty": "beginner",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "ttl",
+      "name": "TTLs",
+      "description": "Time-to-live values for cache expiration.",
+      "category": "backend",
+      "difficulty": "beginner",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "eviction-policies",
+      "name": "Eviction Policies",
+      "description": "Strategies for removing items from a cache.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "cache-invalidation",
+      "name": "Cache Invalidation",
+      "description": "Strategies for updating cache contents.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "edge-caching",
+      "name": "Edge Caching",
+      "description": "Caching at the edge of a network.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "cache-headers",
+      "name": "Cache Headers",
+      "description": "HTTP headers for controlling cache behavior.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "surrogate-keys",
+      "name": "Surrogate Keys",
+      "description": "Keys used to identify and manage cache contents.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "memoization",
+      "name": "Memoization",
+      "description": "Caching the results of expensive function calls.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "query-result-caches",
+      "name": "Query Result Caches",
+      "description": "Caching the results of database queries.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "cache-aside",
+      "name": "Cache-Aside",
+      "description": "A caching pattern that loads data into a cache on demand.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "read-through",
+      "name": "Read-Through",
+      "description": "A caching pattern that loads data into a cache on read operations.",
+      "category": "backend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "unit-testing",
+      "name": "Unit Testing",
+      "description": "Testing individual functions in isolation using mocking and faking external dependencies.",
+      "category": "testing",
+      "difficulty": "beginner",
+      "source_section_id": "section-8"
+    },
+    {
+      "id": "integration-testing",
+      "name": "Integration Testing",
+      "description": "Testing how components work together, including database, cache, and external services.",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "source_section_id": "section-8"
+    },
+    {
+      "id": "end-to-end-testing",
+      "name": "End-to-End Testing",
+      "description": "Exercising the full system through its public API.",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "source_section_id": "section-8"
+    },
+    {
+      "id": "test-doubles",
+      "name": "Test Doubles",
+      "description": "Using stubs, mocks, fakes, and spies in testing, and knowing when to use each.",
+      "category": "testing",
+      "difficulty": "intermediate",
+      "source_section_id": "section-8"
+    },
+    {
+      "id": "property-based-testing",
+      "name": "Property-Based Testing",
+      "description": "Generating inputs to find edge cases that example-based tests miss.",
+      "category": "testing",
+      "difficulty": "advanced",
+      "source_section_id": "section-8"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "description": "Docker images, containers, Dockerfiles, layers, multi-stage builds",
+      "category": "containerization",
+      "difficulty": "intermediate",
+      "source_section_id": "section-9"
+    },
+    {
+      "id": "container-orchestration",
+      "name": "Container Orchestration",
+      "description": "Kubernetes, ECS, Nomad, pods, deployments, services, ingress",
+      "category": "containerization",
+      "difficulty": "advanced",
+      "source_section_id": "section-9"
+    },
+    {
+      "id": "ci-cd-pipelines",
+      "name": "CI/CD Pipelines",
+      "description": "Continuous integration with GitHub Actions, GitLab CI, Jenkins, build, test, deploy stages",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "source_section_id": "section-9"
+    },
+    {
+      "id": "cloud-providers",
+      "name": "Cloud Providers",
+      "description": "AWS, GCP, Azure, core compute, storage, and networking primitives",
+      "category": "cloud-computing",
+      "difficulty": "beginner",
+      "source_section_id": "section-9"
+    },
+    {
+      "id": "structured-logging",
+      "name": "Structured Logging",
+      "description": "Using JSON logs over freeform strings, including log levels and correlation IDs.",
+      "category": "observability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-10"
+    },
+    {
+      "id": "metrics",
+      "name": "Metrics",
+      "description": "Using Prometheus, StatsD, OpenTelemetry for counters, gauges, histograms, and measuring methods.",
+      "category": "observability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-10"
+    },
+    {
+      "id": "distributed-tracing",
+      "name": "Distributed Tracing",
+      "description": "Using spans, traces, and propagation across service boundaries.",
+      "category": "observability",
+      "difficulty": "advanced",
+      "source_section_id": "section-10"
+    },
+    {
+      "id": "alerting",
+      "name": "Alerting",
+      "description": "Using SLOs, error budgets, and determining when to page or ticket.",
+      "category": "observability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-10"
+    },
+    {
+      "id": "horizontal-vs-vertical-scaling",
+      "name": "Horizontal vs Vertical Scaling",
+      "description": "Deciding when to add machines versus making them bigger for scalability",
+      "category": "scalability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-11"
+    },
+    {
+      "id": "load-balancing",
+      "name": "Load Balancing",
+      "description": "Techniques like round-robin, least-connections, and consistent hashing for distributing load",
+      "category": "scalability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-11"
+    },
+    {
+      "id": "message-queues",
+      "name": "Message Queues",
+      "description": "Using queues like Kafka, RabbitMQ, or SQS to introduce asynchrony",
+      "category": "scalability",
+      "difficulty": "intermediate",
+      "source_section_id": "section-11"
+    },
+    {
+      "id": "failure-modes",
+      "name": "Failure Modes",
+      "description": "Handling failures with circuit breakers, retries, timeouts, bulkheads, and degradation",
+      "category": "reliability",
+      "difficulty": "advanced",
+      "source_section_id": "section-11"
+    },
+    {
+      "id": "disaster-recovery",
+      "name": "Disaster Recovery",
+      "description": "Planning for backups, restore drills, and RTO/RPO targets",
+      "category": "reliability",
+      "difficulty": "advanced",
+      "source_section_id": "section-11"
+    },
+    {
+      "id": "common-vulnerabilities",
+      "name": "Common Vulnerabilities",
+      "description": "SQL injection, XSS, CSRF, SSRF, and the OWASP Top 10 vulnerabilities.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-12"
+    },
+    {
+      "id": "transport-security",
+      "name": "Transport Security",
+      "description": "TLS, certificate management, and HSTS for secure data transfer.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-12"
+    },
+    {
+      "id": "secrets-management",
+      "name": "Secrets Management",
+      "description": "Managing secrets using environment variables or secret managers with rotation and least privilege principle.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-12"
+    },
+    {
+      "id": "dependency-security",
+      "name": "Dependency Security",
+      "description": "Scanning for known vulnerabilities, supply-chain attacks, and lockfile discipline for secure dependencies.",
+      "category": "security",
+      "difficulty": "intermediate",
+      "source_section_id": "section-12"
+    }
+  ],
+  "source_path": "samples/clean_roadmap.md"
+}

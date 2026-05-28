@@ -209,6 +209,49 @@ def _persist_results(
     return skill_map
 
 
+def _persist_awaiting_review(
+    final_state: PipelineState,
+    run_state: PipelineState,
+    source_path: str,
+    thread_id: str,
+) -> None:
+    """Persist run_log.json + index for a run paused at human review.
+
+    No skill_map is written (there isn't one yet). resume() reads run_log.json
+    for the source path, and human_review_node already wrote topics_for_review.json.
+    source_id/started_at come from the run-level state (the graph state doesn't
+    carry them); merged_topics/telemetry come from the interrupted graph state.
+    """
+    run_dir = Path("runs") / thread_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    metadata = RunMetadata(
+        thread_id=thread_id,
+        source_id=run_state.get("source_id", ""),
+        started_at=run_state.get("started_at", datetime.now(UTC).isoformat()),
+        ended_at=datetime.now(UTC).isoformat(),
+        status="awaiting_review",
+        total_cost_usd=sum(t.estimated_cost_usd for t in final_state.get("stage_telemetry", [])),
+        total_input_tokens=sum(t.input_tokens for t in final_state.get("stage_telemetry", [])),
+        total_output_tokens=sum(t.output_tokens for t in final_state.get("stage_telemetry", [])),
+        stage_telemetry=final_state.get("stage_telemetry", []),
+        validation_events=final_state.get("validation_events", []),
+    )
+    run_log_data = {
+        "metadata": metadata.model_dump(),
+        "merged_topics": [t.model_dump() for t in final_state.get("merged_topics", [])],
+        "source_path": source_path,
+    }
+    (run_dir / "run_log.json").write_text(json.dumps(run_log_data, indent=2), encoding="utf-8")
+
+    index_html = generate_index()
+    (Path("runs") / "index.html").write_text(index_html, encoding="utf-8")
+
+
+def _review_pause_message(thread_id: str, review_file_path: str) -> str:
+    return f"Review required: {review_file_path}. Run 'pipeline resume {thread_id}' after editing."
+
+
 def run(
     input_path: str,
     always_review: bool = False,
@@ -282,19 +325,28 @@ def run(
     }
 
     # Run graph
+    default_review_path = f"runs/{thread_id}/topics_for_review.json"
     try:
         final_state = _run_graph(state, llm_client, thread_id)
+    except GraphInterrupt:
+        # Defensive: with a checkpointer (always set here via AsyncSqliteSaver),
+        # this version surfaces interrupts through the __interrupt__ state key
+        # rather than raising. A raise only happens without a checkpointer.
+        _persist_awaiting_review(state, state, str(input_file), thread_id)
+        return _review_pause_message(thread_id, default_review_path)
 
-        # Persist results
-        _persist_results(final_state, source_text, str(input_file), thread_id, cache)
+    # Human-review interrupt is returned in the state, not raised. When present,
+    # the run is paused awaiting review; do NOT persist a (would-be-empty) skill_map.
+    interrupts = final_state.get("__interrupt__")
+    if interrupts:
+        review_file_path = interrupts[0].value.get("review_file_path", default_review_path)
+        _persist_awaiting_review(final_state, state, str(input_file), thread_id)
+        return _review_pause_message(thread_id, review_file_path)
 
-        return f"runs/{thread_id}/report.html"
+    # Persist results
+    _persist_results(final_state, source_text, str(input_file), thread_id, cache)
 
-    except GraphInterrupt as e:
-        # Human review interrupt
-        payload = e.args[0] if e.args else {}
-        review_file_path = payload.get("review_file_path", "")
-        return f"Review required: {review_file_path}. Run 'pipeline resume {thread_id}' after editing."
+    return f"runs/{thread_id}/report.html"
 
 
 def review(thread_id: str) -> str:

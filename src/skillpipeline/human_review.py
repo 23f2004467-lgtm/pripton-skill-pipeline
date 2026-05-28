@@ -31,8 +31,10 @@ def _should_interrupt(state: PipelineState) -> bool:
     extract_retries = state.get("extract_retries") or {}
     always_review = state.get("always_review", False)
 
-    # Check if any section needed at least one retry
-    any_retried = any(count > 0 for count in extract_retries.values())
+    # extract_retries[section_id] holds attempts used (1-indexed): 1 means the
+    # section succeeded on the first try (no retry), so a retry only happened when
+    # the count is > 1. (> 0 would be true for every run and always interrupt.)
+    any_retried = any(count > 1 for count in extract_retries.values())
 
     return any_retried or always_review
 

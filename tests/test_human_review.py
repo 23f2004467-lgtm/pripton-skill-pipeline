@@ -26,10 +26,18 @@ class TestShouldInterrupt:
         }
         assert not _should_interrupt(state)
 
-    def test_interrupt_on_any_retry(self):
-        """Interrupt when any section needed at least one retry."""
+    def test_no_interrupt_on_first_try_success(self):
+        """A value of 1 means one attempt (no retry), so no interrupt."""
         state = {
-            "extract_retries": {"section-0": 1, "section-1": 0},
+            "extract_retries": {"section-0": 1, "section-1": 1},
+            "always_review": False,
+        }
+        assert not _should_interrupt(state)
+
+    def test_interrupt_on_any_retry(self):
+        """Interrupt when any section needed at least one retry (attempts > 1)."""
+        state = {
+            "extract_retries": {"section-0": 2, "section-1": 1},
             "always_review": False,
         }
         assert _should_interrupt(state)
@@ -238,7 +246,7 @@ class TestHumanReviewNode:
         ]
         state = {
             "merged_topics": topics,
-            "extract_retries": {"section-0": 1},
+            "extract_retries": {"section-0": 2},  # 2 attempts = one retry fired
             "always_review": False,
             "thread_id": "test-run",
             "validation_events": [],

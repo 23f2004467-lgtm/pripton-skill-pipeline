@@ -141,7 +141,7 @@ class TestHumanReviewInterrupt:
         from skillpipeline.human_review import _should_interrupt
 
         state = {
-            "extract_retries": {"section-0": 1},  # Had a retry
+            "extract_retries": {"section-0": 2},  # 2 attempts = one retry fired
             "always_review": False,
         }
 

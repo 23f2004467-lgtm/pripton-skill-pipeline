@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Pipeline Runs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+
+        /* Stats Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-label { font-size: 13px; color: #666; margin-bottom: 4px; }
+        .stat-value { font-size: 28px; font-weight: 600; }
+        .stat-success { color: #4CAF50; }
+        .stat-warning { color: #FF9800; }
+        .stat-error { color: #F44336; }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .filter-label { font-weight: 500; font-size: 14px; }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Grid Table */
+        .grid-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background: #f8f9fa; }
+        tr.hidden { display: none; }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-complete { background: #d4edda; color: #155724; }
+        .status-flagged { background: #f8d7da; color: #721c24; }
+        .status-awaiting_review { background: #fff3cd; color: #856404; }
+        .status-running { background: #d1ecf1; color: #0c5460; }
+
+        /* Stage Status Cells */
+        .stage-cell {
+            text-align: center;
+            width: 80px;
+        }
+        .stage-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .stage-completed { background: #4CAF50; }
+        .stage-retried { background: #FFC107; }
+        .stage-flagged { background: #F44336; }
+        .stage-awaiting_review { background: #FF9800; }
+        .stage-na { background: #e0e0e0; }
+
+        /* Links */
+        a { color: #036; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Skill Pipeline Runs</h1>
+        </div>
+
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stat-card">
+                <div class="stat-label">Total Runs</div>
+                <div class="stat-value">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Success Rate</div>
+                <div class="stat-value stat-success">100.0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Flag Rate</div>
+                <div class="stat-value stat-error">0.0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Awaiting Review</div>
+                <div class="stat-value stat-warning">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Spend</div>
+                <div class="stat-value">$0.0000</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <span class="filter-label">Filter by status:</span>
+            <select id="statusFilter" class="filter-select" onchange="filterRuns()">
+                <option value="all">All</option>
+                <option value="complete">Complete</option>
+                <option value="flagged">Flagged</option>
+                <option value="awaiting_review">Awaiting Review</option>
+                <option value="running">Running</option>
+            </select>
+        </div>
+
+        <!-- Grid Table -->
+        <div class="grid-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thread ID</th>
+                        <th>Source</th>
+                        <th>Started</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th class="stage-cell">Ingest</th>
+                        <th class="stage-cell">Extract</th>
+                        <th class="stage-cell">Merge</th>
+                        <th class="stage-cell">Human Review</th>
+                        <th class="stage-cell">Relate</th>
+                        <th class="stage-cell">Validate</th>
+                        <th class="stage-cell">Persist</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr data-status="complete">
+                        <td><a href="run_20260528-194952_560b4a65/report.html">run_20260528-194952_560b4a65</a></td>
+                        <td>samples/adversarial_prose.md</td>
+                        <td>2026-05-28T19:49:54.553547+00:00</td>
+                        <td>0ms</td>
+                        <td><span class="status-pill status-complete">complete</span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr data-status="complete">
+                        <td><a href="run_20260528-194847_4b117608/report.html">run_20260528-194847_4b117608</a></td>
+                        <td>samples/messy_tutorial.md</td>
+                        <td>2026-05-28T19:49:21.483683+00:00</td>
+                        <td>0ms</td>
+                        <td><span class="status-pill status-complete">complete</span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr data-status="complete">
+                        <td><a href="run_20260528-194700_3f6d8323/report.html">run_20260528-194700_3f6d8323</a></td>
+                        <td>samples/clean_roadmap.md</td>
+                        <td>2026-05-28T19:47:56.377245+00:00</td>
+                        <td>0ms</td>
+                        <td><span class="status-pill status-complete">complete</span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td class="stage-cell"><span class="stage-dot stage-completed"></span></td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Generated at 2026-05-28T19:49:54.573581+00:00 | Skill Pipeline v0.1.0
+        </div>
+    </div>
+
+    <script>
+        function filterRuns() {
+            const filter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('tbody tr[data-status]');
+
+            rows.forEach(row => {
+                if (filter === 'all' || row.getAttribute('data-status') === filter) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

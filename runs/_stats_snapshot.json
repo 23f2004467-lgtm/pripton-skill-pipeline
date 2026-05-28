@@ -1,0 +1,425 @@
+[
+  {
+    "thread_id": "run_20260528-194847_4b117608",
+    "source_id": "",
+    "started_at": "2026-05-28T19:49:21.483683+00:00",
+    "ended_at": "2026-05-28T19:49:21.483692+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T19:48:47Z",
+        "ended_at": "2026-05-28T19:48:47Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T19:48:47Z",
+        "ended_at": "2026-05-28T19:49:19Z",
+        "duration_ms": 31811,
+        "llm_calls": 9,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T19:49:19Z",
+        "ended_at": "2026-05-28T19:49:21Z",
+        "duration_ms": 1662,
+        "llm_calls": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Getting Comfortable with React Hooks' extracted 2 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'What is a Hook, even' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-1"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useState in more depth' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-2"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useEffect \u2014 the one everyone gets wrong' extracted 7 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-3"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useRef and the escape hatch' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-4"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Custom hooks' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-5"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'What about useReducer, useMemo, useCallback' extracted 3 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-6"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'The performance trap' extracted 6 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-7"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Closing thoughts' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-8"
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 4 topics with normalized name 'react hooks'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "warning",
+        "code": "DIFFICULTY_CONFLICT",
+        "message": "Topic 'react hooks' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'state management'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "warning",
+        "code": "DIFFICULTY_CONFLICT",
+        "message": "Topic 'state management' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'useeffect'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'dependency array'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 19 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  },
+  {
+    "thread_id": "run_20260528-194952_560b4a65",
+    "source_id": "",
+    "started_at": "2026-05-28T19:49:54.553547+00:00",
+    "ended_at": "2026-05-28T19:49:54.553558+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T19:49:52Z",
+        "ended_at": "2026-05-28T19:49:52Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T19:49:52Z",
+        "ended_at": "2026-05-28T19:49:53Z",
+        "duration_ms": 1486,
+        "llm_calls": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T19:49:53Z",
+        "ended_at": "2026-05-28T19:49:54Z",
+        "duration_ms": 698,
+        "llm_calls": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'On Becoming a Software Engineer' extracted 7 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 5 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  },
+  {
+    "thread_id": "run_20260528-194700_3f6d8323",
+    "source_id": "",
+    "started_at": "2026-05-28T19:47:56.377245+00:00",
+    "ended_at": "2026-05-28T19:47:56.377255+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T19:47:00Z",
+        "ended_at": "2026-05-28T19:47:00Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T19:47:00Z",
+        "ended_at": "2026-05-28T19:47:53Z",
+        "duration_ms": 52359,
+        "llm_calls": 13,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T19:47:53Z",
+        "ended_at": "2026-05-28T19:47:56Z",
+        "duration_ms": 3289,
+        "llm_calls": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Backend Web Development Roadmap' extracted 1 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Internet Fundamentals' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-1"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Programming Language Foundations' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-2"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Version Control' extracted 15 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-3"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Databases' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-4"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'APIs' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-5"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Authentication and Authorization' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-6"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Caching' extracted 3 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-7"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Testing' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-8"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Containerization and Deployment' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-9"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Observability' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-10"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Scalability and Reliability' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-11"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Security' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-12"
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 10 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  }
+]

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Pipeline Report - run_20260528-194847_4b117608</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 16px; }
+        .header-meta { display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { color: #666; font-size: 12px; }
+        .meta-value { font-weight: 500; }
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-complete { background: #d4edda; color: #155724; }
+        .status-flagged { background: #f8d7da; color: #721c24; }
+        .status-awaiting_review { background: #fff3cd; color: #856404; }
+        .status-running { background: #d1ecf1; color: #0c5460; }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f9fa; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .severity-error { color: #dc3545; font-weight: 600; }
+        .severity-warning { color: #ffc107; font-weight: 600; }
+        .severity-info { color: #6c757d; }
+        .mermaid-container {
+            background: #fafafa;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        details { margin-top: 16px; }
+        summary { cursor: pointer; font-weight: 500; color: #036; }
+        summary:hover { text-decoration: underline; }
+        pre {
+            background: #f4f4f4;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        .stat-label { font-size: 12px; color: #666; }
+        .stat-value { font-size: 20px; font-weight: 600; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Skill Pipeline Report</h1>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Thread ID</span>
+                    <span class="meta-value">run_20260528-194847_4b117608</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Source</span>
+                    <span class="meta-value">samples/messy_tutorial.md</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Started</span>
+                    <span class="meta-value">2026-05-28T19:49:21.483683+00:00</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Ended</span>
+                    <span class="meta-value">2026-05-28T19:49:21.483692+00:00</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="status-pill status-complete">complete</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Cost</span>
+                    <span class="meta-value">$0.0000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="card">
+            <h2>Pipeline Execution</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">graph LR
+ingest("ingest"):::stagecompleted
+extract("extract"):::stagecompleted
+merge("merge"):::stagecompleted
+human_review("human_review"):::stagecompleted
+relate("relate"):::stagecompleted
+validate("validate"):::stagecompleted
+persist("persist"):::stagecompleted
+ingest --> extract
+extract --> merge
+merge -->|bypass| persist
+merge --> human_review
+human_review --> relate
+relate --> validate
+validate -->|retry| relate
+validate --> persist
+
+    classDef stagecompleted fill:#90EE90,stroke:#4CAF50,stroke-width:2px;
+    classDef stageretried fill:#FFD700,stroke:#FFA500,stroke-width:2px;
+    classDef stageinterrupted fill:#FFA500,stroke:#FF8C00,stroke-width:2px;
+    classDef stageflagged fill:#FFB6C1,stroke:#FF6B6B,stroke-width:2px;
+    classDef stageskipped fill:#D3D3D3,stroke:#9E9E9E,stroke-width:2px;
+     class ingest stagecompleted
+ class extract stagecompleted
+ class merge stagecompleted
+ class human_review stagecompleted
+ class relate stagecompleted
+ class validate stagecompleted
+ class persist stagecompleted</pre>
+            </div>
+        </div>
+
+        <!-- Skill Map -->
+        <div class="card">
+            <h2>Skill Map (Prerequisite Relationships)</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">graph TD
+    react-hooks["React Hooks (beginner)"]
+    class-components["Class Components (beginner)"]
+    state-management["State Management (beginner)"]
+    component-re-renders["Component Re-renders (beginner)"]
+    hooks-best-practices["Hooks Best Practices (intermediate)"]
+    use-state["useState (intermediate)"]
+    initializer-functions["Initializer Functions (intermediate)"]
+    setter-functions["Setter Functions (intermediate)"]
+    react-strict-mode["React Strict Mode (beginner)"]
+    use-effect["useEffect (intermediate)"]
+    dependency-array["Dependency Array (intermediate)"]
+    data-fetching["Data Fetching (intermediate)"]
+    react-query["React Query (advanced)"]
+    swr["SWR (advanced)"]
+    rtk-query["RTK Query (advanced)"]
+    use-ref["useRef (intermediate)"]
+    dom-node-references["DOM Node References (beginner)"]
+    mutable-values["Mutable Values (intermediate)"]
+    render-loops["Render Loops (beginner)"]
+    custom-hooks["Custom Hooks (intermediate)"]
+    react-state["React State (beginner)"]
+    local-storage["Local Storage (beginner)"]
+    react-hooks-ecosystem["React Hooks Ecosystem (intermediate)"]
+    use-reducer["useReducer (intermediate)"]
+    use-memo["useMemo (intermediate)"]
+    use-callback["useCallback (intermediate)"]
+    react-performance["React Performance (intermediate)"]
+    memoization["Memoization (intermediate)"]
+    react-devtools-profiler["React DevTools Profiler (beginner)"]
+    windowing["Windowing (advanced)"]
+    react-window["react-window (intermediate)"]
+    react-virtual["react-virtual (intermediate)"]
+    imperative-control["Imperative Control (advanced)"]
+    react-hooks ==>|prerequisite| use-state
+    react-hooks ==>|prerequisite| use-effect
+    react-hooks ==>|prerequisite| use-ref
+    react-hooks ==>|prerequisite| hooks-best-practices
+    react-hooks ==>|prerequisite| custom-hooks</pre>
+            </div>
+        </div>
+
+        <!-- Other Relationships -->
+        
+        <div class="card">
+            <h2>Other Relationships</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Type</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>Class Components</td>
+                        <td>State Management</td>
+                        <td>related</td>
+                        <td>Class components and state management are related concepts in React.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>State Management</td>
+                        <td>React State</td>
+                        <td>subtopic</td>
+                        <td>React state is a subtopic of state management.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useState</td>
+                        <td>Initializer Functions</td>
+                        <td>related</td>
+                        <td>useState and initializer functions are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useState</td>
+                        <td>Setter Functions</td>
+                        <td>related</td>
+                        <td>useState and setter functions are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useEffect</td>
+                        <td>Dependency Array</td>
+                        <td>related</td>
+                        <td>useEffect and dependency array are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>React Hooks</td>
+                        <td>React Hooks Ecosystem</td>
+                        <td>subtopic</td>
+                        <td>React Hooks ecosystem is a subtopic of React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useReducer</td>
+                        <td>React State</td>
+                        <td>related</td>
+                        <td>useReducer and React state are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useMemo</td>
+                        <td>Memoization</td>
+                        <td>related</td>
+                        <td>useMemo and memoization are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>useCallback</td>
+                        <td>Memoization</td>
+                        <td>related</td>
+                        <td>useCallback and memoization are related concepts in React Hooks.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>React Performance</td>
+                        <td>Memoization</td>
+                        <td>related</td>
+                        <td>React performance and memoization are related concepts in React.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>React DevTools Profiler</td>
+                        <td>React Performance</td>
+                        <td>related</td>
+                        <td>React DevTools Profiler and React performance are related concepts in React.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Windowing</td>
+                        <td>react-window</td>
+                        <td>related</td>
+                        <td>Windowing and react-window are related concepts in React.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Windowing</td>
+                        <td>react-virtual</td>
+                        <td>related</td>
+                        <td>Windowing and react-virtual are related concepts in React.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Imperative Control</td>
+                        <td>react-window</td>
+                        <td>related</td>
+                        <td>Imperative control and react-window are related concepts in React.</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <!-- Stage Telemetry -->
+        <div class="card">
+            <h2>Stage Telemetry</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Duration</th>
+                        <th>LLM Calls</th>
+                        <th>Input Tokens</th>
+                        <th>Output Tokens</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>ingest</td>
+                        <td>0ms</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td>31.8s</td>
+                        <td>9</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>relate</td>
+                        <td>1.7s</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Validation Events -->
+        
+        <div class="card">
+            <h2>Validation Events</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Severity</th>
+                        <th>Code</th>
+                        <th>Message</th>
+                        <th>Retry #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'Getting Comfortable with React Hooks' extracted 2 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'What is a Hook, even' extracted 4 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'useState in more depth' extracted 4 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'useEffect — the one everyone gets wrong' extracted 7 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'useRef and the escape hatch' extracted 4 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'Custom hooks' extracted 5 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'What about useReducer, useMemo, useCallback' extracted 3 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'The performance trap' extracted 6 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'Closing thoughts' extracted 4 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-info">info</td>
+                        <td>DUPLICATE_TOPIC_MERGED</td>
+                        <td>Merged 4 topics with normalized name 'react hooks'</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-warning">warning</td>
+                        <td>DIFFICULTY_CONFLICT</td>
+                        <td>Topic 'react hooks' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-info">info</td>
+                        <td>DUPLICATE_TOPIC_MERGED</td>
+                        <td>Merged 2 topics with normalized name 'state management'</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-warning">warning</td>
+                        <td>DIFFICULTY_CONFLICT</td>
+                        <td>Topic 'state management' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-info">info</td>
+                        <td>DUPLICATE_TOPIC_MERGED</td>
+                        <td>Merged 2 topics with normalized name 'useeffect'</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>merge</td>
+                        <td class="severity-info">info</td>
+                        <td>DUPLICATE_TOPIC_MERGED</td>
+                        <td>Merged 2 topics with normalized name 'dependency array'</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>relate</td>
+                        <td class="severity-info">info</td>
+                        <td>RELATE_OK</td>
+                        <td>Extracted 19 relationships</td>
+                        <td>0</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <!-- Source -->
+        <div class="card">
+            <h2>Input Source</h2>
+            <details>
+                <summary>View source markdown (200 characters, truncated)</summary>
+                <pre># Getting Comfortable with React Hooks
+
+So, you've been writing React for a while with class components, or maybe you're
+new to React entirely and everyone keeps telling you "just learn hooks." Either
+way, this is a tutorial-ish walkthrough of how hooks actually work, with some
+of the gotchas you only discover after you ship them to production.
+
+We're going to bounce between concept and code. If you're skimming, the code
+blocks are the important bits. If you're reading carefully, the prose is where
+the actual reasoning lives.
+
+## What is a Hook, even
+
+A hook is just a function. That's it. The wild thing is that hooks behave
+differently *based on where you call them*. React keeps track of which hook
+you're on by counting calls, in order, on every render. This is why all the
+documentation screams at you to never call hooks inside conditionals or loops.
+If the order changes between renders, React loses track of which state
+corresponds to which `useState` call, and everything explodes.
+
+```js
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Clicked {count} times
+    </button>
+  );
+}
+```
+
+That's the simplest possible hook usage. `useState` returns a tuple: the
+current value, and a setter. When you call the setter, the component re-renders.
+
+### The mental model
+
+If you remember nothing else, remember this: **components are functions that
+re-run on every render, and hooks are how those functions remember things
+across re-runs.** That's the whole game.
+
+State, effects, refs, context — they're all variations on "remember this
+thing between renders" with slightly different semantics.
+
+## useState in more depth
+
+`useState` is the workhorse. A few things that bite people:
+
+You can pass an initializer function for expensive initial values. If you
+write `useState(expensiveComputation())`, that function runs every render,
+even though only the *first* render's value is used. If you write
+`useState(() =>...</pre>
+                
+                <p style="margin-top: 12px; color: #666;">
+                    <em>Source truncated to 2000 characters. Full source at: samples/messy_tutorial.md</em>
+                </p>
+                
+            </details>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Generated at 2026-05-28T19:49:21.492252+00:00 | Skill Pipeline v0.1.0
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Pipeline Report - run_20260528-194952_560b4a65</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 16px; }
+        .header-meta { display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { color: #666; font-size: 12px; }
+        .meta-value { font-weight: 500; }
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-complete { background: #d4edda; color: #155724; }
+        .status-flagged { background: #f8d7da; color: #721c24; }
+        .status-awaiting_review { background: #fff3cd; color: #856404; }
+        .status-running { background: #d1ecf1; color: #0c5460; }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f9fa; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .severity-error { color: #dc3545; font-weight: 600; }
+        .severity-warning { color: #ffc107; font-weight: 600; }
+        .severity-info { color: #6c757d; }
+        .mermaid-container {
+            background: #fafafa;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        details { margin-top: 16px; }
+        summary { cursor: pointer; font-weight: 500; color: #036; }
+        summary:hover { text-decoration: underline; }
+        pre {
+            background: #f4f4f4;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        .stat-label { font-size: 12px; color: #666; }
+        .stat-value { font-size: 20px; font-weight: 600; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Skill Pipeline Report</h1>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Thread ID</span>
+                    <span class="meta-value">run_20260528-194952_560b4a65</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Source</span>
+                    <span class="meta-value">samples/adversarial_prose.md</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Started</span>
+                    <span class="meta-value">2026-05-28T19:49:54.553547+00:00</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Ended</span>
+                    <span class="meta-value">2026-05-28T19:49:54.553558+00:00</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="status-pill status-complete">complete</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Cost</span>
+                    <span class="meta-value">$0.0000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="card">
+            <h2>Pipeline Execution</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">graph LR
+ingest("ingest"):::stagecompleted
+extract("extract"):::stagecompleted
+merge("merge"):::stagecompleted
+human_review("human_review"):::stagecompleted
+relate("relate"):::stagecompleted
+validate("validate"):::stagecompleted
+persist("persist"):::stagecompleted
+ingest --> extract
+extract --> merge
+merge -->|bypass| persist
+merge --> human_review
+human_review --> relate
+relate --> validate
+validate -->|retry| relate
+validate --> persist
+
+    classDef stagecompleted fill:#90EE90,stroke:#4CAF50,stroke-width:2px;
+    classDef stageretried fill:#FFD700,stroke:#FFA500,stroke-width:2px;
+    classDef stageinterrupted fill:#FFA500,stroke:#FF8C00,stroke-width:2px;
+    classDef stageflagged fill:#FFB6C1,stroke:#FF6B6B,stroke-width:2px;
+    classDef stageskipped fill:#D3D3D3,stroke:#9E9E9E,stroke-width:2px;
+     class ingest stagecompleted
+ class extract stagecompleted
+ class merge stagecompleted
+ class human_review stagecompleted
+ class relate stagecompleted
+ class validate stagecompleted
+ class persist stagecompleted</pre>
+            </div>
+        </div>
+
+        <!-- Skill Map -->
+        <div class="card">
+            <h2>Skill Map (Prerequisite Relationships)</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">graph TD
+    technical-intuition["Technical Intuition (advanced)"]
+    effective-communication["Effective Communication (intermediate)"]
+    technical-writing["Technical Writing (intermediate)"]
+    code-quality["Code Quality (intermediate)"]
+    restraint-in-design["Restraint in Design (advanced)"]
+    learning-from-mistakes["Learning from Mistakes (beginner)"]
+    curiosity-driven-learning["Curiosity-Driven Learning (beginner)"]
+    learning-from-mistakes ==>|prerequisite| technical-intuition
+    curiosity-driven-learning ==>|prerequisite| technical-intuition</pre>
+            </div>
+        </div>
+
+        <!-- Other Relationships -->
+        
+        <div class="card">
+            <h2>Other Relationships</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Type</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>Effective Communication</td>
+                        <td>Technical Writing</td>
+                        <td>related</td>
+                        <td>Effective communication is closely related to technical writing, as both involve conveying complex ideas clearly.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Code Quality</td>
+                        <td>Restraint in Design</td>
+                        <td>related</td>
+                        <td>Code quality and restraint in design are related concepts, as both involve careful consideration of design choices.</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Technical Writing</td>
+                        <td>Effective Communication</td>
+                        <td>subtopic</td>
+                        <td>Technical writing is a specific aspect of effective communication, focusing on written communication of technical ideas.</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <!-- Stage Telemetry -->
+        <div class="card">
+            <h2>Stage Telemetry</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Duration</th>
+                        <th>LLM Calls</th>
+                        <th>Input Tokens</th>
+                        <th>Output Tokens</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>ingest</td>
+                        <td>0ms</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td>1.5s</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>relate</td>
+                        <td>698ms</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>$0.0000</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Validation Events -->
+        
+        <div class="card">
+            <h2>Validation Events</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Severity</th>
+                        <th>Code</th>
+                        <th>Message</th>
+                        <th>Retry #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>extract</td>
+                        <td class="severity-info">info</td>
+                        <td>EXTRACT_OK</td>
+                        <td>Section 'On Becoming a Software Engineer' extracted 7 topics</td>
+                        <td>0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>relate</td>
+                        <td class="severity-info">info</td>
+                        <td>RELATE_OK</td>
+                        <td>Extracted 5 relationships</td>
+                        <td>0</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <!-- Source -->
+        <div class="card">
+            <h2>Input Source</h2>
+            <details>
+                <summary>View source markdown (200 characters, truncated)</summary>
+                <pre># On Becoming a Software Engineer
+
+I've been thinking lately about what it actually means to grow as an engineer.
+Not in the resume sense — title progression, salary bands, the conventional
+markers — but in the sense of becoming someone who reaches for the right tool,
+makes the right call under pressure, and ages well in this profession.
+
+When I started out, I thought the job was about knowing things. The more
+frameworks I'd touched, the more languages I could list, the better I'd be.
+I spent my first two years collecting tools. I wrote a side project in every
+framework I heard about. I learned five different deployment systems before I'd
+shipped anything meaningful in any of them. The thing nobody told me was that
+knowing about things and being good at things are not the same skill, and that
+the second one is much harder than the first.
+
+The shift happened slowly. I'd be on call and an alert would fire and I'd
+realize I had absolutely no idea what was actually happening — I'd configured
+the alert from a template, I'd never looked at the underlying metric, I didn't
+know the system well enough to even have a hypothesis. That was a humbling few
+months. I'd been writing code for years but I hadn't been building intuition.
+
+Intuition is the thing I now think about most. The senior engineers I admire
+all share a kind of intellectual patience. They don't rush to a solution. They
+sit with the problem until they understand it. They ask annoying questions
+like "what do we know is actually true here?" and "what's the simplest thing
+that could explain this?" When they finally suggest a fix, it's usually
+disappointingly small — a single line, a single config change — but it works
+the first time. That patience is built from running into the same shape of
+problem dozens of times across years, and starting to see the pattern under
+the surface.
+
+The other thing I've started to notice is how much the job is actually about
+communication, not code. I used to think of meetings and docu...</pre>
+                
+                <p style="margin-top: 12px; color: #666;">
+                    <em>Source truncated to 2000 characters. Full source at: samples/adversarial_prose.md</em>
+                </p>
+                
+            </details>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Generated at 2026-05-28T19:49:54.563517+00:00 | Skill Pipeline v0.1.0
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

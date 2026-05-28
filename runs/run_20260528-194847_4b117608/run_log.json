@@ -1,0 +1,458 @@
+{
+  "metadata": {
+    "thread_id": "run_20260528-194847_4b117608",
+    "source_id": "",
+    "started_at": "2026-05-28T19:49:21.483683+00:00",
+    "ended_at": "2026-05-28T19:49:21.483692+00:00",
+    "status": "complete",
+    "total_cost_usd": 0.0,
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "stage_telemetry": [
+      {
+        "stage": "ingest",
+        "started_at": "2026-05-28T19:48:47Z",
+        "ended_at": "2026-05-28T19:48:47Z",
+        "duration_ms": 0,
+        "llm_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "extract",
+        "started_at": "2026-05-28T19:48:47Z",
+        "ended_at": "2026-05-28T19:49:19Z",
+        "duration_ms": 31811,
+        "llm_calls": 9,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      },
+      {
+        "stage": "relate",
+        "started_at": "2026-05-28T19:49:19Z",
+        "ended_at": "2026-05-28T19:49:21Z",
+        "duration_ms": 1662,
+        "llm_calls": 1,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0
+      }
+    ],
+    "validation_events": [
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Getting Comfortable with React Hooks' extracted 2 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-0"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'What is a Hook, even' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-1"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useState in more depth' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-2"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useEffect \u2014 the one everyone gets wrong' extracted 7 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-3"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'useRef and the escape hatch' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-4"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Custom hooks' extracted 5 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-5"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'What about useReducer, useMemo, useCallback' extracted 3 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-6"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'The performance trap' extracted 6 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-7"
+      },
+      {
+        "stage": "extract",
+        "severity": "info",
+        "code": "EXTRACT_OK",
+        "message": "Section 'Closing thoughts' extracted 4 topics",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": "section-8"
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 4 topics with normalized name 'react hooks'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "warning",
+        "code": "DIFFICULTY_CONFLICT",
+        "message": "Topic 'react hooks' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'state management'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "warning",
+        "code": "DIFFICULTY_CONFLICT",
+        "message": "Topic 'state management' has conflicting difficulties: ['beginner', 'intermediate']. Using 'beginner' (conservative).",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'useeffect'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "merge",
+        "severity": "info",
+        "code": "DUPLICATE_TOPIC_MERGED",
+        "message": "Merged 2 topics with normalized name 'dependency array'",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      },
+      {
+        "stage": "relate",
+        "severity": "info",
+        "code": "RELATE_OK",
+        "message": "Extracted 19 relationships",
+        "retry_number": 0,
+        "flagged": false,
+        "section_id": null
+      }
+    ],
+    "cache_hit": false
+  },
+  "merged_topics": [
+    {
+      "id": "react-hooks",
+      "name": "React Hooks",
+      "description": "Hooks are functions that behave differently based on where they are called, allowing components to remember things across re-renders.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "class-components",
+      "name": "Class Components",
+      "description": "Writing React with class components",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-0"
+    },
+    {
+      "id": "state-management",
+      "name": "State Management",
+      "description": "State management refers to the process of storing and updating data in a component, with useState being a key hook for this purpose.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "component-re-renders",
+      "name": "Component Re-renders",
+      "description": "Components are functions that re-run on every render, with hooks helping them remember things across re-runs.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "hooks-best-practices",
+      "name": "Hooks Best Practices",
+      "description": "Hooks should not be called inside conditionals or loops, as this can cause React to lose track of state.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-1"
+    },
+    {
+      "id": "use-state",
+      "name": "useState",
+      "description": "A hook for managing state in functional components, allowing for initializer functions and setter functions.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "initializer-functions",
+      "name": "Initializer Functions",
+      "description": "Functions that run only once to compute initial state values, useful for expensive computations.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "setter-functions",
+      "name": "Setter Functions",
+      "description": "Functions that update state, can take a value or a function, and should use the functional form when depending on old state.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "react-strict-mode",
+      "name": "React Strict Mode",
+      "description": "A mode that helps catch potential issues, such as unexpected behavior when using useState.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-2"
+    },
+    {
+      "id": "use-effect",
+      "name": "useEffect",
+      "description": "A React hook for handling side effects, such as subscriptions and data fetching.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "dependency-array",
+      "name": "Dependency Array",
+      "description": "An array of values that the effect depends on, used to determine when to re-run the effect.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "data-fetching",
+      "name": "Data Fetching",
+      "description": "The process of retrieving data from an API or other source, often using useEffect.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "react-query",
+      "name": "React Query",
+      "description": "A data fetching library for React that handles caching and other features.",
+      "category": "frontend",
+      "difficulty": "advanced",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "swr",
+      "name": "SWR",
+      "description": "A data fetching library for React that handles caching and other features.",
+      "category": "frontend",
+      "difficulty": "advanced",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "rtk-query",
+      "name": "RTK Query",
+      "description": "A data fetching library for React that handles caching and other features.",
+      "category": "frontend",
+      "difficulty": "advanced",
+      "source_section_id": "section-3"
+    },
+    {
+      "id": "use-ref",
+      "name": "useRef",
+      "description": "A hook that returns a mutable object with a .current property, useful for holding references to DOM nodes or mutable values without triggering re-renders.",
+      "category": "react-hooks",
+      "difficulty": "intermediate",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "dom-node-references",
+      "name": "DOM Node References",
+      "description": "Holding a reference to a DOM node using useRef, allowing for actions like focusing on an input element.",
+      "category": "react-hooks",
+      "difficulty": "beginner",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "mutable-values",
+      "name": "Mutable Values",
+      "description": "Holding mutable values across renders without triggering re-renders, useful for storing timer IDs or previous values.",
+      "category": "react-hooks",
+      "difficulty": "intermediate",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "render-loops",
+      "name": "Render Loops",
+      "description": "A situation where a component re-renders excessively, often due to issues with the dependency array or state shape.",
+      "category": "react-hooks",
+      "difficulty": "beginner",
+      "source_section_id": "section-4"
+    },
+    {
+      "id": "custom-hooks",
+      "name": "Custom Hooks",
+      "description": "A function whose name starts with `use` and that calls other hooks, used to extract reusable stateful logic.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "react-state",
+      "name": "React State",
+      "description": "State management in React, using hooks like useState.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "local-storage",
+      "name": "Local Storage",
+      "description": "A mechanism for storing data locally in the browser.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "react-hooks-ecosystem",
+      "name": "React Hooks Ecosystem",
+      "description": "A collection of third-party hooks, like useDebounce and useMediaQuery, built on the custom hooks pattern.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-5"
+    },
+    {
+      "id": "use-reducer",
+      "name": "useReducer",
+      "description": "A hook for managing complex state updates with a reducer function.",
+      "category": "react-hooks",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "use-memo",
+      "name": "useMemo",
+      "description": "A hook for memoizing expensive computations.",
+      "category": "react-hooks",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "use-callback",
+      "name": "useCallback",
+      "description": "A hook for memoizing function references.",
+      "category": "react-hooks",
+      "difficulty": "intermediate",
+      "source_section_id": "section-6"
+    },
+    {
+      "id": "react-performance",
+      "name": "React Performance",
+      "description": "Optimizing React application performance by identifying slow renders and applying memoization where necessary.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "memoization",
+      "name": "Memoization",
+      "description": "Technique to improve performance by caching results of expensive function calls.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "react-devtools-profiler",
+      "name": "React DevTools Profiler",
+      "description": "Tool for identifying performance bottlenecks in React applications.",
+      "category": "frontend",
+      "difficulty": "beginner",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "windowing",
+      "name": "Windowing",
+      "description": "Technique for optimizing large lists by only rendering visible items.",
+      "category": "frontend",
+      "difficulty": "advanced",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "react-window",
+      "name": "react-window",
+      "description": "Library for efficient rendering of large lists in React.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "react-virtual",
+      "name": "react-virtual",
+      "description": "Library for virtualizing large lists in React.",
+      "category": "frontend",
+      "difficulty": "intermediate",
+      "source_section_id": "section-7"
+    },
+    {
+      "id": "imperative-control",
+      "name": "Imperative Control",
+      "description": "A concept where React controls the flow of an application",
+      "category": "frontend",
+      "difficulty": "advanced",
+      "source_section_id": "section-8"
+    }
+  ],
+  "source_path": "samples/messy_tutorial.md"
+}

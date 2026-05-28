@@ -1,5 +1,9 @@
 """End-to-end pipeline tests."""
 
+# NOTE: These tests mock `create_graph` and verify the run/review/resume
+# orchestration glue. Full pipeline-traversal E2E is validated by the
+# live API runs in Step 21, whose outputs are committed under runs/.
+
 import json
 from pathlib import Path
 from unittest.mock import patch

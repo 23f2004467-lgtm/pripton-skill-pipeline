@@ -21,7 +21,7 @@ from skillpipeline.cache import Cache, get_cache
 from skillpipeline.graph import create_graph
 from skillpipeline.human_review import validate_review_topics
 from skillpipeline.index import generate_index
-from skillpipeline.llm import AnthropicLLMClient, LLMClient
+from skillpipeline.llm import LLMClient, make_default_client
 from skillpipeline.models import (
     PipelineState,
     RunMetadata,
@@ -247,7 +247,7 @@ def run(
     thread_id = _generate_thread_id(source_id)
 
     # Create LLM client
-    llm_client = AnthropicLLMClient()
+    llm_client = make_default_client()
 
     # Create initial state
     state: PipelineState = {
@@ -334,7 +334,7 @@ def resume(thread_id: str) -> str:
         source_text = ""
 
     # Create LLM client
-    llm_client = AnthropicLLMClient()
+    llm_client = make_default_client()
 
     # Create graph with checkpointer
     graph = create_graph(llm_client=llm_client, thread_id=thread_id)

@@ -15,7 +15,7 @@ from typing import Literal
 
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, StateGraph
-from langgraph.types import Interrupt, interrupt
+from langgraph.types import Command, interrupt
 
 from skillpipeline.extract import make_extract_node
 from skillpipeline.human_review import human_review_node
@@ -84,10 +84,13 @@ def _should_retry_or_finish(state: PipelineState) -> Literal["relate", "persist"
     return "persist"
 
 
-def create_graph(llm_client: LLMClient | None = None) -> StateGraph:
+def create_graph(
+    llm_client: LLMClient | None = None,
+    thread_id: str | None = None,
+) -> StateGraph:
     """Create the LangGraph StateGraph for the skill pipeline.
 
-    Sub-step 12b: Linear graph with two conditional edges.
+    Sub-step 12c: Adds SqliteSaver for state persistence.
 
     INGEST -> EXTRACT -> MERGE -> [conditional] -> HUMAN_REVIEW -> RELATE -> VALIDATE -> [conditional] -> PERSIST -> END
 
@@ -97,6 +100,8 @@ def create_graph(llm_client: LLMClient | None = None) -> StateGraph:
 
     Args:
         llm_client: LLM client for extract and relate nodes. If None, creates AnthropicLLMClient.
+        thread_id: Thread ID for this run. If provided, configures SqliteSaver at
+                   runs/{thread_id}/state.sqlite. The directory is created if needed.
 
     Returns:
         Configured StateGraph ready for invocation
@@ -105,8 +110,16 @@ def create_graph(llm_client: LLMClient | None = None) -> StateGraph:
     if llm_client is None:
         llm_client = AnthropicLLMClient()
 
+    # Set up SqliteSaver if thread_id is provided
+    checkpointer = None
+    if thread_id is not None:
+        run_dir = Path("runs") / thread_id
+        run_dir.mkdir(parents=True, exist_ok=True)
+        db_path = run_dir / "state.sqlite"
+        checkpointer = SqliteSaver.from_conn_string(str(db_path))
+
     # Create the graph with PipelineState as the state type
-    graph = StateGraph(PipelineState)
+    graph = StateGraph(PipelineState, checkpointer=checkpointer)
 
     # Add nodes
     graph.add_node("ingest", make_ingest_node())

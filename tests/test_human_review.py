@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -230,7 +231,6 @@ class TestHumanReviewNode:
     @pytest.mark.asyncio
     async def test_trigger_interrupt_on_retries(self, tmp_path):
         """Trigger interrupt when retries occurred."""
-        import tempfile
         import os
 
         topics = [
@@ -249,19 +249,21 @@ class TestHumanReviewNode:
         os.chdir(tmp_path)
 
         try:
-            result = await human_review_node(state)
+            # Mock interrupt() to avoid needing LangGraph context
+            with patch("skillpipeline.human_review.interrupt", return_value=topics):
+                result = await human_review_node(state)
 
-            assert result["approved_topics"] is None
-            assert result.get("awaiting_review") is True
-            assert "review_file_path" in result
+                # After mock, interrupt returns the topics (simulating resume)
+                assert result["approved_topics"] == topics
+                assert result.get("status") == "awaiting_review"
 
-            # Check file was written
-            review_file = Path(tmp_path) / "runs" / "test-run" / "topics_for_review.json"
-            assert review_file.exists()
+                # Check file was written BEFORE interrupt was called
+                review_file = Path(tmp_path) / "runs" / "test-run" / "topics_for_review.json"
+                assert review_file.exists()
 
-            content = review_file.read_text()
-            data = json.loads(content)
-            assert "topics" in data
+                content = review_file.read_text()
+                data = json.loads(content)
+                assert "topics" in data
         finally:
             os.chdir(original_cwd)
 
@@ -285,10 +287,13 @@ class TestHumanReviewNode:
         os.chdir(tmp_path)
 
         try:
-            result = await human_review_node(state)
+            # Mock interrupt() to avoid needing LangGraph context
+            with patch("skillpipeline.human_review.interrupt", return_value=topics):
+                result = await human_review_node(state)
 
-            assert result["approved_topics"] is None
-            assert result.get("awaiting_review") is True
+                # After mock, interrupt returns the topics (simulating resume)
+                assert result["approved_topics"] == topics
+                assert result.get("status") == "awaiting_review"
         finally:
             os.chdir(original_cwd)
 

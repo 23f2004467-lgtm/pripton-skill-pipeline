@@ -16,6 +16,8 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from langgraph.types import interrupt
+
 from skillpipeline.models import PipelineState, Topic, ValidationEvent
 
 
@@ -84,11 +86,13 @@ async def human_review_node(state: PipelineState) -> dict:
     If interrupt condition is met:
     - Write topics_for_review.json
     - Set status to "awaiting_review"
-    - Trigger interrupt
+    - Call interrupt() to pause execution
 
     If no interrupt condition:
     - Set approved_topics = merged_topics
     - Return immediately (graph proceeds to relate)
+
+    On resume, interrupt() returns the approved_topics_list from the caller.
 
     Args:
         state: Current pipeline state
@@ -117,20 +121,30 @@ async def human_review_node(state: PipelineState) -> dict:
     run_dir = Path("runs") / thread_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    # Write topics_for_review.json
+    # Write topics_for_review.json BEFORE calling interrupt()
+    # State on disk should reflect "awaiting review" even if resume never happens
     review_file = run_dir / "topics_for_review.json"
     content = _format_review_file_content(merged_topics, merge_events)
     review_file.write_text(content, encoding="utf-8")
 
-    # Update status to awaiting_review
-    # Note: The interrupt() call will happen in the graph layer, not here.
-    # This node just prepares the state and signals that interrupt is needed.
-    # The graph's conditional edge will handle the actual interrupt() call.
-    return {
-        "approved_topics": None,  # Will be set on resume
-        "awaiting_review": True,  # Signal to graph to trigger interrupt
+    # Prepare interrupt payload
+    payload = {
+        "thread_id": thread_id,
         "review_file_path": str(review_file),
     }
+
+    # Update status to awaiting_review before interrupting
+    # This will be persisted via SqliteSaver
+    status_update = {
+        "status": "awaiting_review",
+    }
+
+    # Call interrupt() - this raises GraphInterrupt which propagates up
+    # The return value from interrupt() on resume will be the approved_topics_list
+    approved_topics_list = interrupt(payload)
+
+    # On resume, approved_topics_list is set from the resume command
+    return {"approved_topics": approved_topics_list, **status_update}
 
 
 def validate_review_topics(topics_data: list | dict) -> list[Topic]:

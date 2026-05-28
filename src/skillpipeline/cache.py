@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from skillpipeline.models import RunMetadata, SkillMap
 
@@ -38,7 +38,7 @@ class Cache:
     - Location: .cache/{source_id}.json
     """
 
-    def __init__(self, cache_dir: Path | str = ".cache") -> None:
+    def __init__(self, cache_dir: Union[Path, str] = ".cache") -> None:
         """Initialize the cache with a specific directory.
 
         Args:
@@ -154,7 +154,7 @@ class Cache:
 _default_cache: Optional[Cache] = None
 
 
-def get_cache(cache_dir: Path | str = ".cache") -> Cache:
+def get_cache(cache_dir: Union[Path, str] = ".cache") -> Cache:
     """Get the default cache instance (singleton pattern).
 
     Args:

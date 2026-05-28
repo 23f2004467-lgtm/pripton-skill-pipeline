@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from langgraph.types import interrupt
 
@@ -85,7 +85,6 @@ async def human_review_node(state: PipelineState) -> dict:
 
     If interrupt condition is met:
     - Write topics_for_review.json
-    - Set status to "awaiting_review"
     - Call interrupt() to pause execution
 
     If no interrupt condition:
@@ -94,11 +93,16 @@ async def human_review_node(state: PipelineState) -> dict:
 
     On resume, interrupt() returns the approved_topics_list from the caller.
 
+    NOTE: The "awaiting_review" status is signaled by the presence of
+    topics_for_review.json combined with approved_topics=None in the checkpoint.
+    The checkpoint captured at interrupt time naturally has approved_topics unset.
+    This avoids needing a separate node just to set status before interrupt.
+
     Args:
         state: Current pipeline state
 
     Returns:
-        State update dict with approved_topics and/or status
+        State update dict with approved_topics
     """
     merged_topics = state.get("merged_topics")
     if not merged_topics:
@@ -122,7 +126,7 @@ async def human_review_node(state: PipelineState) -> dict:
     run_dir.mkdir(parents=True, exist_ok=True)
 
     # Write topics_for_review.json BEFORE calling interrupt()
-    # State on disk should reflect "awaiting review" even if resume never happens
+    # File presence + approved_topics=None in checkpoint = "awaiting_review" signal
     review_file = run_dir / "topics_for_review.json"
     content = _format_review_file_content(merged_topics, merge_events)
     review_file.write_text(content, encoding="utf-8")
@@ -133,21 +137,16 @@ async def human_review_node(state: PipelineState) -> dict:
         "review_file_path": str(review_file),
     }
 
-    # Update status to awaiting_review before interrupting
-    # This will be persisted via SqliteSaver
-    status_update = {
-        "status": "awaiting_review",
-    }
-
     # Call interrupt() - this raises GraphInterrupt which propagates up
-    # The return value from interrupt() on resume will be the approved_topics_list
+    # The checkpoint at this point has approved_topics unset (None)
+    # On resume, interrupt() returns the approved_topics_list passed by caller
     approved_topics_list = interrupt(payload)
 
-    # On resume, approved_topics_list is set from the resume command
-    return {"approved_topics": approved_topics_list, **status_update}
+    # On resume, set approved_topics from the resume command
+    return {"approved_topics": approved_topics_list}
 
 
-def validate_review_topics(topics_data: list | dict) -> list[Topic]:
+def validate_review_topics(topics_data: Union[list, dict]) -> list[Topic]:
     """Validate topics_for_review.json content on resume.
 
     Args:

@@ -11,7 +11,7 @@ See PLAN.md Sections 2.1 and 12 Step 12 for the full specification.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, Optional
 
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, StateGraph
@@ -25,6 +25,9 @@ from skillpipeline.merge import merge_topics
 from skillpipeline.models import PipelineState
 from skillpipeline.relate import make_relate_node
 from skillpipeline.validate import validate_relationships
+
+if TYPE_CHECKING:
+    from langgraph.graph import CompiledStateGraph
 
 
 def _persist_node(state: PipelineState) -> dict:
@@ -85,9 +88,9 @@ def _should_retry_or_finish(state: PipelineState) -> Literal["relate", "persist"
 
 
 def create_graph(
-    llm_client: LLMClient | None = None,
-    thread_id: str | None = None,
-) -> StateGraph:
+    llm_client: Optional[LLMClient] = None,
+    thread_id: Optional[str] = None,
+) -> CompiledStateGraph:
     """Create the LangGraph StateGraph for the skill pipeline.
 
     Sub-step 12c: Adds SqliteSaver for state persistence.
@@ -104,7 +107,7 @@ def create_graph(
                    runs/{thread_id}/state.sqlite. The directory is created if needed.
 
     Returns:
-        Configured StateGraph ready for invocation
+        Compiled StateGraph ready for invocation (with checkpointer if thread_id provided)
     """
     # Create LLM client if not provided
     if llm_client is None:
@@ -119,7 +122,7 @@ def create_graph(
         checkpointer = SqliteSaver.from_conn_string(str(db_path))
 
     # Create the graph with PipelineState as the state type
-    graph = StateGraph(PipelineState, checkpointer=checkpointer)
+    graph = StateGraph(PipelineState)
 
     # Add nodes
     graph.add_node("ingest", make_ingest_node())
@@ -161,4 +164,6 @@ def create_graph(
 
     graph.add_edge("persist", END)
 
-    return graph
+    # Compile with checkpointer
+    # checkpointer is passed to compile(), not StateGraph.__init__()
+    return graph.compile(checkpointer=checkpointer)

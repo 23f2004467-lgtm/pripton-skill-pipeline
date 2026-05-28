@@ -1,12 +1,8 @@
 """Tests for graph module - sub-step 12c (interrupt + SqliteSaver + resume)."""
 
 import json
-import tempfile
-from pathlib import Path
 
 import pytest
-from langgraph.errors import GraphInterrupt
-from langgraph.types import Command
 
 from skillpipeline.graph import (
     _should_bypass_to_persist,
@@ -24,16 +20,12 @@ class TestGraphCompiles:
         """Graph should compile with default AnthropicLLMClient."""
         graph = create_graph()
         assert graph is not None
-        compiled = graph.compile()
-        assert compiled is not None
 
     def test_graph_compiles_with_fake_client(self):
         """Graph should compile with FakeLLMClient for testing."""
         fake_client = FakeLLMClient()
         graph = create_graph(fake_client)
         assert graph is not None
-        compiled = graph.compile()
-        assert compiled is not None
 
 
 class TestShouldBypassToPersist:

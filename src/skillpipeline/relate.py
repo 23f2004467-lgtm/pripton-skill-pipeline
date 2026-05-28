@@ -4,7 +4,7 @@ import asyncio
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from skillpipeline.llm import LLMClient, ToolCall
 from skillpipeline.models import (
@@ -233,8 +233,8 @@ def make_relate_node(llm_client: LLMClient):
 
     async def relate_node(state: PipelineState) -> dict:
         """LangGraph node function for relate stage."""
-        approved_topics: list[Topic] | None = state.get("approved_topics")
-        relate_feedback: str | None = state.get("relate_feedback")
+        approved_topics: Optional[list[Topic]] = state.get("approved_topics")
+        relate_feedback: Optional[str] = state.get("relate_feedback")
         relate_retries: int = state.get("relate_retries", 0)
 
         if not approved_topics:

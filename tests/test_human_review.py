@@ -255,7 +255,6 @@ class TestHumanReviewNode:
 
                 # After mock, interrupt returns the topics (simulating resume)
                 assert result["approved_topics"] == topics
-                assert result.get("status") == "awaiting_review"
 
                 # Check file was written BEFORE interrupt was called
                 review_file = Path(tmp_path) / "runs" / "test-run" / "topics_for_review.json"
@@ -293,7 +292,6 @@ class TestHumanReviewNode:
 
                 # After mock, interrupt returns the topics (simulating resume)
                 assert result["approved_topics"] == topics
-                assert result.get("status") == "awaiting_review"
         finally:
             os.chdir(original_cwd)
 

@@ -34,7 +34,6 @@ def _generate_pipeline_mermaid(state: PipelineState) -> str:
         Mermaid graph LR source
     """
     validation_events = state.get("validation_events", [])
-    stage_telemetry = state.get("stage_telemetry", [])
 
     # Determine status for each stage
     def _get_stage_status(stage: str) -> str:
@@ -65,17 +64,7 @@ def _generate_pipeline_mermaid(state: PipelineState) -> str:
         elif stage in ["ingest", "extract", "merge", "relate", "validate", "persist"]:
             status = _get_stage_status(stage)
 
-        # Color mapping
-        fill_colors = {
-            "completed": "#90EE90",
-            "retried": "#FFD700",
-            "interrupted": "#FFA500",
-            "flagged": "#FFB6C1",
-            "skipped": "#D3D3D3",
-        }
-        color = fill_colors.get(status, "#90EE90")
-
-        # Use mermaid node styling
+        # Node fills are applied via the classDef styles below (stage{status}).
         nodes.append(f'{stage}("{stage}"):::stage{status}')
 
     # Define styles

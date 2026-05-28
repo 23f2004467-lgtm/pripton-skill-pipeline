@@ -239,7 +239,6 @@ def make_relate_node(llm_client: LLMClient):
         """LangGraph node function for relate stage."""
         approved_topics: Optional[list[Topic]] = state.get("approved_topics")
         relate_feedback: Optional[str] = state.get("relate_feedback")
-        relate_retries: int = state.get("relate_retries", 0)
 
         if not approved_topics:
             return {

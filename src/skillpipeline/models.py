@@ -101,6 +101,7 @@ class PipelineState(TypedDict):
     # Inputs
     source_path: Optional[str]
     raw_text: Optional[str]
+    source_id: Optional[str]  # content hash; carried into the graph so persist/cache key correctly
 
     # Stage outputs
     document: Optional[Document]

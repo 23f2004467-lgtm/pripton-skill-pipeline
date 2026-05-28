@@ -113,6 +113,7 @@ def _run_graph(
     input_state = {
         "source_path": state.get("source_path"),
         "raw_text": state.get("raw_text"),
+        "source_id": state.get("source_id"),
         "thread_id": thread_id,
         "always_review": state.get("always_review", False),
     }

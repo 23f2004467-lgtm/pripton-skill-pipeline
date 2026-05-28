@@ -13,6 +13,7 @@ build/
 
 # Runs (generated, except .gitkeep)
 runs/run_*/
+runs/index.html
 !runs/.gitkeep
 
 # Cache (generated, except .gitkeep)

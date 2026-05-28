@@ -1,6 +1,5 @@
 """Tests for retry helper module."""
 
-import pytest
 
 from skillpipeline.retry import (
     MAX_EXTRACT_ATTEMPTS,

@@ -38,10 +38,10 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-# We use Optional[X] consistently across the codebase rather than X | None,
-# both for legibility and to match the style established in PLAN.md Section 4.
-# UP045 wants PEP 604 form; we explicitly opt out.
-ignore = ["E501", "UP045"]
+# We use typing-module forms (Optional[X], Union[X, Y]) consistently across the
+# codebase rather than PEP 604 (X | None), both for legibility and to match the
+# style established in PLAN.md Section 4. UP045/UP007 want PEP 604; we opt out.
+ignore = ["E501", "UP045", "UP007"]
 
 [tool.mypy]
 python_version = "3.11"

@@ -14,6 +14,8 @@ from skillpipeline.validate import (
     SELF_LOOP,
     _validate_relationships,
     format_feedback,
+)
+from skillpipeline.validate import (
     validate_relationships as validate_node,
 )
 

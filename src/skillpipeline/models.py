@@ -1,8 +1,7 @@
 import operator
 from typing import Annotated, Literal, Optional, TypedDict
 
-from pydantic import ValidationInfo, field_validator
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 # Literal types
 Difficulty = Literal["beginner", "intermediate", "advanced"]

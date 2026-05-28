@@ -1,15 +1,13 @@
-import json
 import pytest
 
 from skillpipeline.extract import (
-    EXTRACT_TOPICS_TOOL,
     ExtractValidationError,
     extract_one_section,
     make_extract_node,
     validate_extract_response,
 )
 from skillpipeline.llm import FakeLLMClient, ToolCall
-from skillpipeline.models import Section, Topic
+from skillpipeline.models import Section
 from skillpipeline.retry import MAX_EXTRACT_ATTEMPTS, format_feedback
 
 

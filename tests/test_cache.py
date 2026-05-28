@@ -1,13 +1,11 @@
 """Tests for cache module."""
 
-import json
 from datetime import UTC, datetime
-from pathlib import Path
 
 import pytest
 
 from skillpipeline.cache import Cache, CacheEntry, get_cache
-from skillpipeline.models import Relationship, RunMetadata, SkillMap, Topic, ValidationEvent
+from skillpipeline.models import Relationship, RunMetadata, SkillMap, Topic
 
 
 @pytest.fixture(autouse=True)

@@ -14,7 +14,7 @@ from typing import Optional
 
 from jinja2 import Template
 
-from skillpipeline.models import PipelineState, SkillMap, RelationshipType
+from skillpipeline.models import PipelineState, SkillMap
 
 
 def _generate_pipeline_mermaid(state: PipelineState) -> str:
@@ -114,7 +114,7 @@ def _generate_pipeline_mermaid(state: PipelineState) -> str:
     # (simplified for now - showing all potential paths)
     final_edges = edges
 
-    mermaid = f"graph LR\n" + "\n".join(nodes) + "\n" + "\n".join(final_edges) + "\n" + styles + "\n".join(class_defs)
+    mermaid = "graph LR\n" + "\n".join(nodes) + "\n" + "\n".join(final_edges) + "\n" + styles + "\n".join(class_defs)
     return mermaid
 
 

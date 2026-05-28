@@ -3,7 +3,7 @@
 import pytest
 
 from skillpipeline.llm import FakeLLMClient, ToolCall
-from skillpipeline.models import Relationship, Topic, ValidationEvent
+from skillpipeline.models import Topic
 from skillpipeline.relate import (
     relate_topics,
     validate_relate_response,

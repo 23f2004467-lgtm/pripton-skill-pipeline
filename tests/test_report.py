@@ -3,12 +3,12 @@
 from datetime import UTC, datetime
 
 from skillpipeline.models import (
-    SkillMap,
-    Topic,
     Relationship,
-    ValidationEvent,
-    StageTelemetry,
     RunMetadata,
+    SkillMap,
+    StageTelemetry,
+    Topic,
+    ValidationEvent,
 )
 from skillpipeline.report import generate_report
 

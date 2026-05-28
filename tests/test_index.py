@@ -1,17 +1,16 @@
 """Tests for runs-index generator."""
 
-from datetime import UTC, datetime
 
 from skillpipeline.index import (
-    _get_stage_status,
-    _format_duration,
-    _get_stage_statuses,
     _compute_stats,
+    _format_duration,
+    _get_stage_status,
+    _get_stage_statuses,
     generate_index,
 )
 from skillpipeline.models import (
-    ValidationEvent,
     RunMetadata,
+    ValidationEvent,
 )
 
 
@@ -183,8 +182,8 @@ def test_get_stage_statuses():
 
 def test_generate_index_empty():
     """Generate index with no runs."""
-    from pathlib import Path
     import tempfile
+    from pathlib import Path
 
     with tempfile.TemporaryDirectory() as tmpdir:
         runs_dir = Path(tmpdir)
@@ -196,9 +195,9 @@ def test_generate_index_empty():
 
 def test_generate_index_with_runs():
     """Generate index with sample runs."""
-    from pathlib import Path
-    import tempfile
     import json
+    import tempfile
+    from pathlib import Path
 
     with tempfile.TemporaryDirectory() as tmpdir:
         runs_dir = Path(tmpdir)
@@ -278,8 +277,8 @@ def test_generate_index_with_runs():
 
 def test_generate_index_ignores_corrupt_logs():
     """Generate index ignores corrupt run_log.json files."""
-    from pathlib import Path
     import tempfile
+    from pathlib import Path
 
     with tempfile.TemporaryDirectory() as tmpdir:
         runs_dir = Path(tmpdir)

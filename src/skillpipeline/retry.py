@@ -8,7 +8,6 @@ See PLAN.md Section 6 for the retry specification.
 
 from __future__ import annotations
 
-
 # Retry bounds (Section 6.2)
 MAX_EXTRACT_ATTEMPTS: int = 3  # Per-section extract retries
 MAX_RELATE_RETRIES: int = 3  # Relate retries (graph edge)

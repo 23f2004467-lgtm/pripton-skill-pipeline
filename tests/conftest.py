@@ -41,7 +41,7 @@ def sample_topic():
 @pytest.fixture
 def sample_topics():
     """Multiple sample Topics for testing."""
-    from skillpipeline.models import Topic, Difficulty
+    from skillpipeline.models import Topic
     return [
         Topic(
             id="javascript",

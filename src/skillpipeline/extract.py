@@ -2,14 +2,12 @@
 
 import asyncio
 import time
-from collections.abc import Callable
 from pathlib import Path
 from typing import Optional
 
 from skillpipeline.llm import LLMClient, ToolCall
-from skillpipeline.models import Section, Topic, ValidationEvent, StageTelemetry
+from skillpipeline.models import Section, StageTelemetry, Topic, ValidationEvent
 from skillpipeline.retry import MAX_EXTRACT_ATTEMPTS, format_feedback
-
 
 # Tool definition for extract (Section 5.2)
 EXTRACT_TOPICS_TOOL = {

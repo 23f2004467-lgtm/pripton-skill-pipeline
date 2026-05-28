@@ -1,7 +1,6 @@
 """Stage 6: Validate relationships against schema and business rules."""
 
-from collections import Counter
-from typing import Literal, Optional
+from typing import Optional
 
 import networkx as nx
 

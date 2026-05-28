@@ -2,20 +2,18 @@
 
 import asyncio
 import time
-from collections.abc import Callable
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 from skillpipeline.llm import LLMClient, ToolCall
 from skillpipeline.models import (
     PipelineState,
     Relationship,
+    StageTelemetry,
     Topic,
     ValidationEvent,
-    StageTelemetry,
 )
 from skillpipeline.retry import MAX_RELATE_RETRIES, format_feedback
-
 
 # Tool definition for relate (Section 5.5)
 EXTRACT_RELATIONSHIPS_TOOL = {

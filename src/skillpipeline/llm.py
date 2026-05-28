@@ -10,7 +10,7 @@ import json
 import os
 import random
 import time
-from typing import Any, Optional, Protocol, cast
+from typing import Any, NamedTuple, Optional, Protocol, cast
 
 from groq import (
     APIConnectionError,
@@ -36,6 +36,21 @@ def compute_cost_usd(input_tokens: int, output_tokens: int) -> float:
     return (input_tokens / 1_000_000) * INPUT_COST_PER_MTOK + (
         output_tokens / 1_000_000
     ) * OUTPUT_COST_PER_MTOK
+
+
+class TokenUsage(NamedTuple):
+    """Accumulated token usage and cost across one or more LLM calls."""
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+
+    def __add__(self, other: "TokenUsage") -> "TokenUsage":  # type: ignore[override]
+        return TokenUsage(
+            self.input_tokens + other.input_tokens,
+            self.output_tokens + other.output_tokens,
+            self.cost_usd + other.cost_usd,
+        )
 
 
 class LLMResponse:

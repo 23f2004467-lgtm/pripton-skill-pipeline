@@ -150,7 +150,7 @@ class TestExtractOneSection:
         system_prompt = "You are an extractor."
         user_template = "# {heading}\n\n{body}\n\n{feedback}"
 
-        topics, attempts, events = await extract_one_section(
+        topics, attempts, events, _usage = await extract_one_section(
             section=sample_section,
             llm_client=client,
             system_prompt=system_prompt,
@@ -204,7 +204,7 @@ class TestExtractOneSection:
         system_prompt = "You are an extractor."
         user_template = "# {heading}\n\n{body}\n\n{feedback}"
 
-        topics, attempts, events = await extract_one_section(
+        topics, attempts, events, _usage = await extract_one_section(
             section=sample_section,
             llm_client=client,
             system_prompt=system_prompt,
@@ -236,7 +236,7 @@ class TestExtractOneSection:
         system_prompt = "You are an extractor."
         user_template = "# {heading}\n\n{body}\n\n{feedback}"
 
-        topics, attempts, events = await extract_one_section(
+        topics, attempts, events, _usage = await extract_one_section(
             section=sample_section,
             llm_client=client,
             system_prompt=system_prompt,

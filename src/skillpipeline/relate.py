@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from skillpipeline.llm import LLMClient, ToolCall
+from skillpipeline.llm import LLMClient, TokenUsage, ToolCall
 from skillpipeline.models import (
     PipelineState,
     Relationship,
@@ -124,7 +124,7 @@ async def relate_topics(
     system_prompt: str,
     user_prompt_template: str,
     feedback: Optional[str] = None,
-) -> tuple[list[Relationship], int, list[ValidationEvent]]:
+) -> tuple[list[Relationship], int, list[ValidationEvent], TokenUsage]:
     """Extract relationships from approved topics with retry logic.
 
     Args:
@@ -135,12 +135,15 @@ async def relate_topics(
         feedback: Optional feedback from a previous failed attempt.
 
     Returns:
-        (relationships, attempts_used, validation_events) tuple.
+        (relationships, attempts_used, validation_events, usage) tuple. `usage`
+        sums token counts and cost across every LLM call (including attempts that
+        failed validation).
 
     Note:
         Returns empty list and flagged event if max retries exhausted.
     """
     validation_events: list[ValidationEvent] = []
+    usage = TokenUsage()
 
     # Build topics list for the prompt
     topics_list = "\n".join(
@@ -161,6 +164,9 @@ async def relate_topics(
                 user_prompt=user_prompt,
                 system_prompt=system_prompt,
             )
+            usage += TokenUsage(
+                response.input_tokens, response.output_tokens, response.estimated_cost_usd
+            )
 
             tool_calls = llm_client.get_tool_calls(response)
             relationships = validate_relate_response(tool_calls)
@@ -178,7 +184,7 @@ async def relate_topics(
                 )
             )
 
-            return relationships, attempt + 1, validation_events
+            return relationships, attempt + 1, validation_events, usage
 
         except RelateValidationError as e:
             # Record the validation error and retry
@@ -210,7 +216,7 @@ async def relate_topics(
         )
     )
 
-    return [], MAX_RELATE_RETRIES, validation_events
+    return [], MAX_RELATE_RETRIES, validation_events, usage
 
 
 def make_relate_node(llm_client: LLMClient):
@@ -254,7 +260,7 @@ def make_relate_node(llm_client: LLMClient):
         started_at_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started_at))
 
         # Run relationship extraction
-        relationships, attempts_used, validation_events = await relate_topics(
+        relationships, attempts_used, validation_events, usage = await relate_topics(
             approved_topics=approved_topics,
             llm_client=llm_client,
             system_prompt=system_prompt,
@@ -272,6 +278,9 @@ def make_relate_node(llm_client: LLMClient):
             ended_at=ended_at_iso,
             duration_ms=duration_ms,
             llm_calls=attempts_used,
+            input_tokens=usage.input_tokens,
+            output_tokens=usage.output_tokens,
+            estimated_cost_usd=usage.cost_usd,
         )
 
         return {

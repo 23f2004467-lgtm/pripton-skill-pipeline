@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from skillpipeline.llm import LLMClient, ToolCall
+from skillpipeline.llm import LLMClient, TokenUsage, ToolCall
 from skillpipeline.models import Section, StageTelemetry, Topic, ValidationEvent
 from skillpipeline.retry import MAX_EXTRACT_ATTEMPTS, format_feedback
 
@@ -138,7 +138,7 @@ async def extract_one_section(
     system_prompt: str,
     user_prompt_template: str,
     feedback: Optional[str] = None,
-) -> tuple[list[Topic], int, list[ValidationEvent]]:
+) -> tuple[list[Topic], int, list[ValidationEvent], TokenUsage]:
     """Extract topics from a single section with retry logic.
 
     Args:
@@ -149,12 +149,15 @@ async def extract_one_section(
         feedback: Optional feedback from a previous failed attempt.
 
     Returns:
-        (topics, attempts_used, validation_events) tuple.
+        (topics, attempts_used, validation_events, usage) tuple. `usage` sums
+        token counts and cost across every LLM call made for this section,
+        including attempts that later failed validation (we still paid for them).
 
     Note:
         Returns empty list and flagged event if max retries exhausted.
     """
     validation_events: list[ValidationEvent] = []
+    usage = TokenUsage()
 
     # Build the user prompt
     user_prompt = user_prompt_template.format(
@@ -169,6 +172,9 @@ async def extract_one_section(
                 tool=EXTRACT_TOPICS_TOOL,
                 user_prompt=user_prompt,
                 system_prompt=system_prompt,
+            )
+            usage += TokenUsage(
+                response.input_tokens, response.output_tokens, response.estimated_cost_usd
             )
 
             tool_calls = llm_client.get_tool_calls(response)
@@ -191,7 +197,7 @@ async def extract_one_section(
                 )
             )
 
-            return topics, attempt + 1, validation_events
+            return topics, attempt + 1, validation_events, usage
 
         except ExtractValidationError as e:
             # Record the validation error and retry
@@ -225,7 +231,7 @@ async def extract_one_section(
         )
     )
 
-    return [], MAX_EXTRACT_ATTEMPTS, validation_events
+    return [], MAX_EXTRACT_ATTEMPTS, validation_events, usage
 
 
 async def extract_sections_parallel(
@@ -235,7 +241,7 @@ async def extract_sections_parallel(
     user_prompt_template: str,
     initial_retries: dict[str, int],
     initial_feedback: dict[str, str],
-) -> tuple[list[Topic], dict[str, int], dict[str, str], list[ValidationEvent]]:
+) -> tuple[list[Topic], dict[str, int], dict[str, str], list[ValidationEvent], TokenUsage]:
     """Extract topics from all sections in parallel.
 
     Args:
@@ -269,17 +275,19 @@ async def extract_sections_parallel(
     retry_counts: dict[str, int] = initial_retries.copy()
     feedback_messages: dict[str, str] = initial_feedback.copy()
     all_validation_events: list[ValidationEvent] = []
+    total_usage = TokenUsage()
 
-    for section, (topics, attempts, events) in zip(sections, results):
+    for section, (topics, attempts, events, usage) in zip(sections, results):
         all_topics.extend(topics)
         retry_counts[section.id] = attempts
         all_validation_events.extend(events)
+        total_usage += usage
 
         # Keep the last feedback message for this section (for potential resume)
         if events and events[-1].severity in ("warning", "error"):
             feedback_messages[section.id] = events[-1].message
 
-    return all_topics, retry_counts, feedback_messages, all_validation_events
+    return all_topics, retry_counts, feedback_messages, all_validation_events, total_usage
 
 
 def make_extract_node(llm_client: LLMClient):
@@ -322,7 +330,7 @@ def make_extract_node(llm_client: LLMClient):
         started_at_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started_at))
 
         # Run parallel extraction
-        topics, retry_counts, feedback_messages, validation_events = await extract_sections_parallel(
+        topics, retry_counts, feedback_messages, validation_events, usage = await extract_sections_parallel(
             sections=sections,
             llm_client=llm_client,
             system_prompt=system_prompt,
@@ -344,6 +352,9 @@ def make_extract_node(llm_client: LLMClient):
             ended_at=ended_at_iso,
             duration_ms=duration_ms,
             llm_calls=total_llm_calls,
+            input_tokens=usage.input_tokens,
+            output_tokens=usage.output_tokens,
+            estimated_cost_usd=usage.cost_usd,
         )
 
         # Identify flagged sections (those that hit max retries)

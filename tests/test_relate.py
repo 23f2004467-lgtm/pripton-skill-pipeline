@@ -181,7 +181,7 @@ class TestRelateTopics:
         system_prompt = "You are a relater."
         user_template = "# Topics\n{topics}\n{feedback}"
 
-        relationships, attempts, events = await relate_topics(
+        relationships, attempts, events, _usage = await relate_topics(
             approved_topics=sample_topics,
             llm_client=sample_client,
             system_prompt=system_prompt,
@@ -232,7 +232,7 @@ class TestRelateTopics:
         system_prompt = "You are a relater."
         user_template = "# Topics\n{topics}\n{feedback}"
 
-        relationships, attempts, events = await relate_topics(
+        relationships, attempts, events, _usage = await relate_topics(
             approved_topics=sample_topics,
             llm_client=sample_client,
             system_prompt=system_prompt,
@@ -259,7 +259,7 @@ class TestRelateTopics:
         system_prompt = "You are a relater."
         user_template = "# Topics\n{topics}\n{feedback}"
 
-        relationships, attempts, events = await relate_topics(
+        relationships, attempts, events, _usage = await relate_topics(
             approved_topics=sample_topics,
             llm_client=sample_client,
             system_prompt=system_prompt,
@@ -304,7 +304,7 @@ class TestRelateTopics:
         user_template = "# Topics\n{topics}\n{feedback}"
 
         # First call to capture the feedback that would be generated
-        _, _, first_events = await relate_topics(
+        _, _, first_events, _usage = await relate_topics(
             approved_topics=sample_topics,
             llm_client=sample_client,
             system_prompt=system_prompt,
@@ -317,7 +317,7 @@ class TestRelateTopics:
         # Second call with explicit feedback - reset client to only return good response
         sample_client.set_responses([good_response])
         feedback = f"A previous attempt failed: {error_msg}"
-        relationships, attempts, events = await relate_topics(
+        relationships, attempts, events, _usage = await relate_topics(
             approved_topics=sample_topics,
             llm_client=sample_client,
             system_prompt=system_prompt,

@@ -10,6 +10,7 @@ See PLAN.md Sections 2.1 and 12 Step 12 for the full specification.
 
 from __future__ import annotations
 
+import sqlite3
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Optional
 
@@ -118,7 +119,11 @@ def create_graph(
         run_dir = Path("runs") / thread_id
         run_dir.mkdir(parents=True, exist_ok=True)
         db_path = run_dir / "state.sqlite"
-        checkpointer = SqliteSaver.from_conn_string(str(db_path))
+        # from_conn_string() is a context manager that yields a saver; we need a
+        # live instance whose connection outlives create_graph() (invoke and the
+        # separate-process resume happen later), so construct it directly.
+        conn = sqlite3.connect(str(db_path), check_same_thread=False)
+        checkpointer = SqliteSaver(conn)
 
     # Create the graph with PipelineState as the state type
     graph = StateGraph(PipelineState)

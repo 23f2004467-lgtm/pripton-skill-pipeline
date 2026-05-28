@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Pipeline Report - {{ thread_id }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 16px; }
+        .header-meta { display: flex; flex-wrap: wrap; gap: 24px; font-size: 14px; }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { color: #666; font-size: 12px; }
+        .meta-value { font-weight: 500; }
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-complete { background: #d4edda; color: #155724; }
+        .status-flagged { background: #f8d7da; color: #721c24; }
+        .status-awaiting_review { background: #fff3cd; color: #856404; }
+        .status-running { background: #d1ecf1; color: #0c5460; }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f9fa; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .severity-error { color: #dc3545; font-weight: 600; }
+        .severity-warning { color: #ffc107; font-weight: 600; }
+        .severity-info { color: #6c757d; }
+        .mermaid-container {
+            background: #fafafa;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        details { margin-top: 16px; }
+        summary { cursor: pointer; font-weight: 500; color: #036; }
+        summary:hover { text-decoration: underline; }
+        pre {
+            background: #f4f4f4;
+            padding: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        .stat-label { font-size: 12px; color: #666; }
+        .stat-value { font-size: 20px; font-weight: 600; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Skill Pipeline Report</h1>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Thread ID</span>
+                    <span class="meta-value">{{ thread_id }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Source</span>
+                    <span class="meta-value">{{ source_name }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Started</span>
+                    <span class="meta-value">{{ started_at }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Ended</span>
+                    <span class="meta-value">{{ ended_at }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="status-pill status-{{ status }}">{{ status.replace('_', ' ') }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Cost</span>
+                    <span class="meta-value">{{ total_cost_usd }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="card">
+            <h2>Pipeline Execution</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">{{ pipeline_mermaid }}</pre>
+            </div>
+        </div>
+
+        <!-- Skill Map -->
+        <div class="card">
+            <h2>Skill Map (Prerequisite Relationships)</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">{{ skill_map_mermaid }}</pre>
+            </div>
+        </div>
+
+        <!-- Other Relationships -->
+        {% if non_prereq_relationships %}
+        <div class="card">
+            <h2>Other Relationships</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Type</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rel in non_prereq_relationships %}
+                    <tr>
+                        <td>{{ rel.from_name }}</td>
+                        <td>{{ rel.to_name }}</td>
+                        <td>{{ rel.type }}</td>
+                        <td>{{ rel.rationale }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Stage Telemetry -->
+        <div class="card">
+            <h2>Stage Telemetry</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Duration</th>
+                        <th>LLM Calls</th>
+                        <th>Input Tokens</th>
+                        <th>Output Tokens</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for telem in stage_telemetry %}
+                    <tr>
+                        <td>{{ telem.stage }}</td>
+                        <td>{{ format_duration(telem.duration_ms) }}</td>
+                        <td>{{ telem.llm_calls }}</td>
+                        <td>{{ telem.input_tokens }}</td>
+                        <td>{{ telem.output_tokens }}</td>
+                        <td>{{ format_cost(telem.estimated_cost_usd) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Validation Events -->
+        {% if validation_events %}
+        <div class="card">
+            <h2>Validation Events</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Severity</th>
+                        <th>Code</th>
+                        <th>Message</th>
+                        <th>Retry #</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in validation_events %}
+                    <tr>
+                        <td>{{ event.stage }}</td>
+                        <td class="severity-{{ event.severity }}">{{ event.severity }}</td>
+                        <td>{{ event.code }}</td>
+                        <td>{{ event.message }}</td>
+                        <td>{{ event.retry_number }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Source -->
+        <div class="card">
+            <h2>Input Source</h2>
+            <details>
+                <summary>View source markdown ({{ source_text[:200]|length if not source_truncated else source_text[:200]|length }} characters{% if source_truncated %}, truncated{% endif %})</summary>
+                <pre>{{ source_text }}</pre>
+                {% if source_truncated %}
+                <p style="margin-top: 12px; color: #666;">
+                    <em>Source truncated to 2000 characters. Full source at: {{ source_name }}</em>
+                </p>
+                {% endif %}
+            </details>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Generated at {{ generated_at }} | Skill Pipeline v0.1.0
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

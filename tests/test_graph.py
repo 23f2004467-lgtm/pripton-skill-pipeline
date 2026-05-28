@@ -17,7 +17,7 @@ class TestGraphCompiles:
     """Test that the graph compiles successfully."""
 
     def test_graph_compiles_with_default_client(self):
-        """Graph should compile with default AnthropicLLMClient."""
+        """Graph should compile with default GroqLLMClient."""
         graph = create_graph()
         assert graph is not None
 

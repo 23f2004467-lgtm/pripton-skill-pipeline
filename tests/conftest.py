@@ -2,6 +2,17 @@
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _dummy_groq_key(monkeypatch):
+    """Provide a dummy GROQ_API_KEY so the default client can be constructed.
+
+    The Groq SDK validates the key eagerly at construction (unlike Anthropic's
+    deferred check), so tests that build the default client without making a
+    real call still need a key present. Tests that hit the network are mocked.
+    """
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test_dummy")
+
+
 @pytest.fixture
 def sample_section():
     """A sample Section for testing."""

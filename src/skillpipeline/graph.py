@@ -20,7 +20,7 @@ from langgraph.types import Command, interrupt
 from skillpipeline.extract import make_extract_node
 from skillpipeline.human_review import human_review_node
 from skillpipeline.ingest import make_ingest_node
-from skillpipeline.llm import LLMClient, make_default_client
+from skillpipeline.llm import GroqLLMClient, LLMClient
 from skillpipeline.merge import merge_topics
 from skillpipeline.models import PipelineState
 from skillpipeline.relate import make_relate_node
@@ -102,7 +102,7 @@ def create_graph(
     - From validate: if errors and relate_retries < 3, route to relate (retry), else to persist
 
     Args:
-        llm_client: LLM client for extract and relate nodes. If None, selected via make_default_client().
+        llm_client: LLM client for extract and relate nodes. If None, creates GroqLLMClient.
         thread_id: Thread ID for this run. If provided, configures SqliteSaver at
                    runs/{thread_id}/state.sqlite. The directory is created if needed.
 
@@ -111,7 +111,7 @@ def create_graph(
     """
     # Create LLM client if not provided
     if llm_client is None:
-        llm_client = make_default_client()
+        llm_client = GroqLLMClient()
 
     # Set up SqliteSaver if thread_id is provided
     checkpointer = None

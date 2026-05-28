@@ -2,11 +2,16 @@ import json
 
 import pytest
 
+from skillpipeline.extract import EXTRACT_TOPICS_TOOL
 from skillpipeline.llm import (
+    INPUT_COST_PER_MTOK,
     MODEL,
-    AnthropicLLMClient,
+    OUTPUT_COST_PER_MTOK,
     FakeLLMClient,
+    GroqLLMClient,
+    LLMResponse,
     ToolCall,
+    _to_groq_tool,
     compute_cost_usd,
 )
 
@@ -15,16 +20,18 @@ class TestCostComputation:
     def test_zero_cost(self):
         assert compute_cost_usd(0, 0) == 0.0
 
-    def test_per_mtok_rates(self):
-        # 1M input tokens = $3.00
-        assert compute_cost_usd(1_000_000, 0) == 3.00
-        # 1M output tokens = $15.00
-        assert compute_cost_usd(0, 1_000_000) == 15.00
+    def test_groq_free_tier_rates_are_zero(self):
+        # Groq free tier: both rates are 0.00, so any usage costs $0.
+        assert INPUT_COST_PER_MTOK == 0.0
+        assert OUTPUT_COST_PER_MTOK == 0.0
+        assert compute_cost_usd(1_000_000, 0) == 0.0
+        assert compute_cost_usd(0, 1_000_000) == 0.0
 
-    def test_combined_cost(self):
-        # 100k input + 50k output
+    def test_combined_cost_matches_rates(self):
         cost = compute_cost_usd(100_000, 50_000)
-        expected = (100_000 / 1_000_000) * 3.0 + (50_000 / 1_000_000) * 15.0
+        expected = (100_000 / 1_000_000) * INPUT_COST_PER_MTOK + (
+            50_000 / 1_000_000
+        ) * OUTPUT_COST_PER_MTOK
         assert abs(cost - expected) < 0.0001
 
 
@@ -110,27 +117,54 @@ class TestFakeLLMClient:
         assert r2.content[0]["text"] == "B"
 
 
-class TestAnthropicLLMClient:
+class TestGroqLLMClient:
     def test_init_with_api_key(self):
         # Should not raise with provided key
-        client = AnthropicLLMClient(api_key="test-key")
+        client = GroqLLMClient(api_key="test-key")
         assert client.model == MODEL
 
     def test_init_defaults(self, monkeypatch):
         # Should read from env when no key provided
-        monkeypatch.setenv("ANTHROPIC_API_KEY", "env-key")
-        client = AnthropicLLMClient()
+        monkeypatch.setenv("GROQ_API_KEY", "env-key")
+        client = GroqLLMClient()
         assert client.model == MODEL
 
     def test_custom_config(self):
-        client = AnthropicLLMClient(
-            model="claude-3-haiku-1.5",
+        client = GroqLLMClient(
+            api_key="test-key",
+            model="llama-3.1-8b-instant",
             temperature=0.5,
             max_tokens=2048,
         )
-        assert client.model == "claude-3-haiku-1.5"
+        assert client.model == "llama-3.1-8b-instant"
         assert client.temperature == 0.5
         assert client.max_tokens == 2048
+
+    def test_tool_translation_to_groq_format(self):
+        # Anthropic-style input_schema becomes Groq's function "parameters".
+        groq_tool = _to_groq_tool(EXTRACT_TOPICS_TOOL)
+        assert groq_tool["type"] == "function"
+        fn = groq_tool["function"]
+        assert fn["name"] == "record_topics"
+        assert fn["description"] == EXTRACT_TOPICS_TOOL["description"]
+        assert fn["parameters"] is EXTRACT_TOPICS_TOOL["input_schema"]
+
+    def test_get_tool_calls_maps_tool_use_blocks(self):
+        client = GroqLLMClient(api_key="test-key")
+        response = LLMResponse(
+            content=[
+                {"type": "tool_use", "id": "call_1", "name": "record_topics", "input": {"topics": []}},
+                {"type": "text", "text": "ignored"},
+            ],
+            input_tokens=10,
+            output_tokens=5,
+            model=MODEL,
+        )
+        calls = client.get_tool_calls(response)
+        assert len(calls) == 1
+        assert calls[0].name == "record_topics"
+        assert calls[0].input == {"topics": []}
+        assert calls[0].id == "call_1"
 
 
 class TestToolCall:

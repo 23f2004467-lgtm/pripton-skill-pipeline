@@ -1,0 +1,18 @@
+{
+  "tool_use": {
+    "name": "record_topics",
+    "input": {
+      "topics": [
+        {
+          "id": "invalid_id_with_Uppercase",
+          "name": "Invalid Topic",
+          "description": "This has an invalid ID pattern",
+          "category": "test",
+          "difficulty": "beginner"
+        }
+      ]
+    }
+  },
+  "input_tokens": 100,
+  "output_tokens": 50
+}

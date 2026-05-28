@@ -1,0 +1,16 @@
+{
+  "tool_use": {
+    "name": "record_relationships",
+    "input": {
+      "relationships": [
+        {
+          "from_id": "nonexistent-topic",
+          "to_id": "react-fundamentals",
+          "type": "prerequisite"
+        }
+      ]
+    }
+  },
+  "input_tokens": 150,
+  "output_tokens": 50
+}

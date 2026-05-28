@@ -1,0 +1,24 @@
+# Extract Relationships
+
+You are analyzing a set of technical topics and identifying the relationships between them.
+
+## Approved Topics
+
+{topics}
+
+## Relationship Types
+
+1. **prerequisite** — Topic A must be learned before Topic B. Use this when the material explicitly states that B requires A, or when A is foundational to understanding B.
+2. **related** — Topics are conceptually related but neither is strictly prerequisite to the other. Use for topics that belong to the same domain or are often discussed together.
+3. **subtopic** — Topic A is a specific sub-concept of Topic B. Use when A is a narrower or more specific aspect of B.
+
+## Instructions
+
+Identify relationships between the topics above. For each relationship:
+- `from_id` and `to_id` MUST be exactly one of the topic IDs listed above
+- Do NOT invent topic IDs that are not in the list
+- Provide a brief rationale explaining why this relationship exists
+
+Focus on meaningful relationships. Not every topic needs to be connected. Quality over quantity.
+
+{feedback}

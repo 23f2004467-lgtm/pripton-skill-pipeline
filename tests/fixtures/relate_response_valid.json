@@ -1,0 +1,23 @@
+{
+  "tool_use": {
+    "name": "record_relationships",
+    "input": {
+      "relationships": [
+        {
+          "from_id": "javascript-basics",
+          "to_id": "react-fundamentals",
+          "type": "prerequisite",
+          "rationale": "React requires JavaScript knowledge"
+        },
+        {
+          "from_id": "react-fundamentals",
+          "to_id": "react-hooks",
+          "type": "related",
+          "rationale": "Hooks are a modern React pattern"
+        }
+      ]
+    }
+  },
+  "input_tokens": 200,
+  "output_tokens": 100
+}

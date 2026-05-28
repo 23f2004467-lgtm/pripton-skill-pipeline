@@ -1,0 +1,25 @@
+{
+  "tool_use": {
+    "name": "record_topics",
+    "input": {
+      "topics": [
+        {
+          "id": "javascript-basics",
+          "name": "JavaScript Basics",
+          "description": "Fundamental JavaScript concepts including variables, functions, and control flow",
+          "category": "backend",
+          "difficulty": "beginner"
+        },
+        {
+          "id": "react-fundamentals",
+          "name": "React Fundamentals",
+          "description": "Core React concepts including components, props, and state management",
+          "category": "frontend",
+          "difficulty": "intermediate"
+        }
+      ]
+    }
+  },
+  "input_tokens": 150,
+  "output_tokens": 80
+}

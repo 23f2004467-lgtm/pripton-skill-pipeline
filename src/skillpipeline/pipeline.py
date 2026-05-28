@@ -7,13 +7,16 @@ See PLAN.md Section 9 for CLI surface and Section 5.7 for persist behavior.
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import os
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.errors import GraphInterrupt
 from langgraph.types import Command
 
@@ -58,6 +61,37 @@ def _generate_thread_id(source_id: str) -> str:
     return f"run_{timestamp}_{short_hash}"
 
 
+async def _ainvoke_graph(
+    thread_id: str,
+    llm_client: LLMClient,
+    graph_input: Any,
+) -> PipelineState:
+    """Compile and async-invoke the graph under an AsyncSqliteSaver.
+
+    The extract/relate nodes are async, so the graph must be driven via ainvoke,
+    which requires an async checkpointer. AsyncSqliteSaver.from_conn_string is an
+    async context manager whose connection must wrap compile+invoke, so the graph
+    is built here rather than ahead of time. The sqlite file is shared across
+    processes, which is what makes interrupt/resume durable.
+
+    Args:
+        thread_id: Thread ID for this run (also the runs/ subdir + db location).
+        llm_client: LLM client for extract and relate nodes.
+        graph_input: Either the initial state dict (run) or a Command (resume).
+
+    Returns:
+        Final pipeline state (may be incomplete if interrupted).
+    """
+    run_dir = Path("runs") / thread_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    db_path = run_dir / "state.sqlite"
+    config = {"configurable": {"thread_id": thread_id}}
+
+    async with AsyncSqliteSaver.from_conn_string(str(db_path)) as checkpointer:
+        graph = create_graph(llm_client=llm_client, checkpointer=checkpointer)
+        return await graph.ainvoke(graph_input, config)
+
+
 def _run_graph(
     state: PipelineState,
     llm_client: LLMClient,
@@ -72,28 +106,17 @@ def _run_graph(
 
     Returns:
         Final pipeline state (may be incomplete if interrupted)
-    """
-    graph = create_graph(llm_client=llm_client, thread_id=thread_id)
 
-    # Initial state for graph
+    Raises:
+        GraphInterrupt: If the human_review node interrupts; the caller handles it.
+    """
     input_state = {
         "source_path": state.get("source_path"),
         "raw_text": state.get("raw_text"),
         "thread_id": thread_id,
         "always_review": state.get("always_review", False),
     }
-
-    # Invoke graph
-    # This may raise GraphInterrupt if human_review is triggered
-    try:
-        config = {"configurable": {"thread_id": thread_id}}
-        final_state = graph.invoke(input_state, config)
-        return final_state
-    except GraphInterrupt:
-        # Human review interrupt occurred
-        # The interrupt payload contains review file path
-        # Re-raise for the caller to handle
-        raise
+    return asyncio.run(_ainvoke_graph(thread_id, llm_client, input_state))
 
 
 def _persist_results(
@@ -336,15 +359,12 @@ def resume(thread_id: str) -> str:
     # Create LLM client
     llm_client = GroqLLMClient()
 
-    # Create graph with checkpointer
-    graph = create_graph(llm_client=llm_client, thread_id=thread_id)
-
-    # Resume from human_review interrupt
-    config = {"configurable": {"thread_id": thread_id}}
-
     try:
-        # Command(resume=...) passes the approved topics to the human_review node
-        final_state = graph.invoke(Command(resume=approved_topics), config)
+        # Command(resume=...) passes the approved topics to the human_review node.
+        # Same async path as run(): the saver reopens the existing state.sqlite.
+        final_state = asyncio.run(
+            _ainvoke_graph(thread_id, llm_client, Command(resume=approved_topics))
+        )
 
         # Persist results
         _persist_results(final_state, source_text, source_path, thread_id, get_cache())

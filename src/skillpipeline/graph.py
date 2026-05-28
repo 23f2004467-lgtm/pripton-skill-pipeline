@@ -10,11 +10,8 @@ See PLAN.md Sections 2.1 and 12 Step 12 for the full specification.
 
 from __future__ import annotations
 
-import sqlite3
-from pathlib import Path
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional
 
-from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, StateGraph
 
 from skillpipeline.extract import make_extract_node
@@ -27,6 +24,7 @@ from skillpipeline.relate import make_relate_node
 from skillpipeline.validate import validate_relationships
 
 if TYPE_CHECKING:
+    from langgraph.checkpoint.base import BaseCheckpointSaver
     from langgraph.graph import CompiledStateGraph
 
 
@@ -89,11 +87,9 @@ def _should_retry_or_finish(state: PipelineState) -> Literal["relate", "persist"
 
 def create_graph(
     llm_client: Optional[LLMClient] = None,
-    thread_id: Optional[str] = None,
+    checkpointer: Optional[BaseCheckpointSaver[Any]] = None,
 ) -> CompiledStateGraph:
     """Create the LangGraph StateGraph for the skill pipeline.
-
-    Sub-step 12c: Adds SqliteSaver for state persistence.
 
     INGEST -> EXTRACT -> MERGE -> [conditional] -> HUMAN_REVIEW -> RELATE -> VALIDATE -> [conditional] -> PERSIST -> END
 
@@ -103,27 +99,17 @@ def create_graph(
 
     Args:
         llm_client: LLM client for extract and relate nodes. If None, creates GroqLLMClient.
-        thread_id: Thread ID for this run. If provided, configures SqliteSaver at
-                   runs/{thread_id}/state.sqlite. The directory is created if needed.
+        checkpointer: Checkpointer for state persistence (enables interrupt/resume).
+            The extract/relate nodes are async, so callers invoke via ainvoke and must
+            pass an async checkpointer (AsyncSqliteSaver). If None, the graph compiles
+            without persistence and cannot interrupt.
 
     Returns:
-        Compiled StateGraph ready for invocation (with checkpointer if thread_id provided)
+        Compiled StateGraph ready for async invocation.
     """
     # Create LLM client if not provided
     if llm_client is None:
         llm_client = GroqLLMClient()
-
-    # Set up SqliteSaver if thread_id is provided
-    checkpointer = None
-    if thread_id is not None:
-        run_dir = Path("runs") / thread_id
-        run_dir.mkdir(parents=True, exist_ok=True)
-        db_path = run_dir / "state.sqlite"
-        # from_conn_string() is a context manager that yields a saver; we need a
-        # live instance whose connection outlives create_graph() (invoke and the
-        # separate-process resume happen later), so construct it directly.
-        conn = sqlite3.connect(str(db_path), check_same_thread=False)
-        checkpointer = SqliteSaver(conn)
 
     # Create the graph with PipelineState as the state type
     graph = StateGraph(PipelineState)

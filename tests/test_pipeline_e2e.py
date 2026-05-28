@@ -6,7 +6,7 @@
 
 import json
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
 from skillpipeline.pipeline import run
 
@@ -26,40 +26,39 @@ def test_e2e_clean_input(tmp_path):
         return
 
     with patch("skillpipeline.pipeline.create_graph") as mock_graph:
-        # Mock the compiled graph's invoke method
-        mock_compiled = type("obj", (object,), {
-            "invoke": lambda self, state, config: {
-                "approved_topics": [
-                    {
-                        "id": "javascript-basics",
-                        "name": "JavaScript Basics",
-                        "description": "Fundamental JavaScript concepts",
-                        "category": "backend",
-                        "difficulty": "beginner",
-                    },
-                    {
-                        "id": "react-fundamentals",
-                        "name": "React Fundamentals",
-                        "description": "Core React concepts",
-                        "category": "frontend",
-                        "difficulty": "intermediate",
-                    },
-                ],
-                "relationships": [
-                    {
-                        "from_id": "javascript-basics",
-                        "to_id": "react-fundamentals",
-                        "type": "prerequisite",
-                        "rationale": "React requires JavaScript knowledge",
-                    }
-                ],
-                "status": "complete",
-                "source_id": "abc123",
-                "stage_telemetry": [],
-                "validation_events": [],
-                "merged_topics": [],
-            }
-        })()
+        # Nodes are async, so the pipeline drives the graph via ainvoke.
+        mock_compiled = Mock()
+        mock_compiled.ainvoke = AsyncMock(return_value={
+            "approved_topics": [
+                {
+                    "id": "javascript-basics",
+                    "name": "JavaScript Basics",
+                    "description": "Fundamental JavaScript concepts",
+                    "category": "backend",
+                    "difficulty": "beginner",
+                },
+                {
+                    "id": "react-fundamentals",
+                    "name": "React Fundamentals",
+                    "description": "Core React concepts",
+                    "category": "frontend",
+                    "difficulty": "intermediate",
+                },
+            ],
+            "relationships": [
+                {
+                    "from_id": "javascript-basics",
+                    "to_id": "react-fundamentals",
+                    "type": "prerequisite",
+                    "rationale": "React requires JavaScript knowledge",
+                }
+            ],
+            "status": "complete",
+            "source_id": "abc123",
+            "stage_telemetry": [],
+            "validation_events": [],
+            "merged_topics": [],
+        })
         mock_graph.return_value = mock_compiled
 
         # Run pipeline
@@ -97,17 +96,16 @@ def test_e2e_messy_input_retries(tmp_path):
     # Test that the pipeline can handle the messy sample without crashing
     # The actual retry behavior is tested in test_extract.py
     with patch("skillpipeline.pipeline.create_graph") as mock_graph:
-        mock_compiled = type("obj", (object,), {
-            "invoke": lambda self, state, config: {
-                "approved_topics": [],
-                "relationships": [],
-                "status": "complete",
-                "source_id": "xyz",
-                "stage_telemetry": [],
-                "validation_events": [],
-                "merged_topics": [],
-            }
-        })()
+        mock_compiled = Mock()
+        mock_compiled.ainvoke = AsyncMock(return_value={
+            "approved_topics": [],
+            "relationships": [],
+            "status": "complete",
+            "source_id": "xyz",
+            "stage_telemetry": [],
+            "validation_events": [],
+            "merged_topics": [],
+        })
         mock_graph.return_value = mock_compiled
 
         # Run pipeline - should complete without error
@@ -128,17 +126,16 @@ def test_e2e_adversarial_input_flags(tmp_path):
     # Test that the pipeline can handle adversarial input without crashing
     # The actual flag behavior is tested in test_validate.py
     with patch("skillpipeline.pipeline.create_graph") as mock_graph:
-        mock_compiled = type("obj", (object,), {
-            "invoke": lambda self, state, config: {
-                "approved_topics": [],
-                "relationships": [],
-                "status": "flagged",
-                "source_id": "adv123",
-                "stage_telemetry": [],
-                "validation_events": [],
-                "merged_topics": [],
-            }
-        })()
+        mock_compiled = Mock()
+        mock_compiled.ainvoke = AsyncMock(return_value={
+            "approved_topics": [],
+            "relationships": [],
+            "status": "flagged",
+            "source_id": "adv123",
+            "stage_telemetry": [],
+            "validation_events": [],
+            "merged_topics": [],
+        })
         mock_graph.return_value = mock_compiled
 
         # Run pipeline - should complete with flag status
@@ -201,13 +198,11 @@ def test_e2e_human_review_flow(tmp_path):
     with patch("skillpipeline.pipeline.create_graph") as mock_graph:
         from langgraph.errors import GraphInterrupt
 
-        # First call: interrupt at human_review
-        mock_compiled = type("obj", (object,), {
-            "invoke": lambda self, state, config: (_ for _ in ()).throw(
-                GraphInterrupt({"thread_id": "test-thread", "review_file": "topics_for_review.json"})
-            )
-        })()
-
+        # First call: async invoke interrupts at human_review
+        mock_compiled = Mock()
+        mock_compiled.ainvoke = AsyncMock(side_effect=GraphInterrupt(
+            {"thread_id": "test-thread", "review_file": "topics_for_review.json"}
+        ))
         mock_graph.return_value = mock_compiled
 
         try:

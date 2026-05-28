@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 from skillpipeline.cache import CacheEntry
 from skillpipeline.models import (
@@ -60,8 +60,8 @@ def test_run_creates_output_files(tmp_path):
         mock_compiled = Mock()
         mock_graph.return_value = mock_compiled
 
-        # Mock invoke to return completed state
-        mock_compiled.invoke.return_value = {
+        # Nodes are async, so the pipeline drives the graph via ainvoke.
+        mock_compiled.ainvoke = AsyncMock(return_value={
             "approved_topics": [
                 Topic(
                     id="test",
@@ -77,7 +77,7 @@ def test_run_creates_output_files(tmp_path):
             "stage_telemetry": [],
             "validation_events": [],
             "merged_topics": [],
-        }
+        })
 
         _ = run(str(input_file), always_review=False, no_cache=True)
 
@@ -243,8 +243,8 @@ def test_resume_loads_and_continues(tmp_path):
         mock_compiled = Mock()
         mock_graph.return_value = mock_compiled
 
-        # Mock invoke to return completed state
-        mock_compiled.invoke.return_value = {
+        # Nodes are async, so resume drives the graph via ainvoke.
+        mock_compiled.ainvoke = AsyncMock(return_value={
             "approved_topics": [],
             "relationships": [],
             "status": "complete",
@@ -252,7 +252,7 @@ def test_resume_loads_and_continues(tmp_path):
             "stage_telemetry": [],
             "validation_events": [],
             "merged_topics": [],
-        }
+        })
 
         # Change to tmp_path for the test
         import os
@@ -263,8 +263,8 @@ def test_resume_loads_and_continues(tmp_path):
             _ = resume(thread_id)
 
             # Verify graph was called with resume Command
-            mock_compiled.invoke.assert_called_once()
-            call_args = mock_compiled.invoke.call_args
+            mock_compiled.ainvoke.assert_called_once()
+            call_args = mock_compiled.ainvoke.call_args
             assert call_args[0][0].resume is not None
             assert len(call_args[0][0].resume) == 1
             assert call_args[0][0].resume[0].id == "test"

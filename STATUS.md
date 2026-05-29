@@ -1,6 +1,6 @@
 # Build Status
 
-**Complete.** All 21 build-checklist steps in [PLAN.md](PLAN.md) (Section 12) are implemented and committed, including the Step 21 live-run pass. The full pipeline runs end-to-end — ingest → extract → merge → human-review → relate → validate → persist — producing a structured skill map plus a self-contained HTML report and the runs-index dashboard. The test suite passes (227 tests, no API key required; the LLM is mocked at the boundary), `ruff check .` is clean, and CI (`.github/workflows/ci.yml`) gates `ruff` + `pytest`. See PLAN.md for the architecture and per-step detail, and `README.md` for usage.
+**Complete.** All 21 build-checklist steps in [PLAN.md](PLAN.md) (Section 12) are implemented and committed, including the Step 21 live-run pass. The full pipeline runs end-to-end — ingest → extract → merge → human-review → relate → validate → persist — producing a structured skill map plus a self-contained HTML report and the runs-index dashboard. The test suite passes (231 tests, no API key required; the LLM is mocked at the boundary), `ruff check .` is clean, and CI (`.github/workflows/ci.yml`) gates `ruff` + `pytest`. See PLAN.md for the architecture and per-step detail, and `README.md` for usage.
 
 ## Notes for a reviewer landing here
 

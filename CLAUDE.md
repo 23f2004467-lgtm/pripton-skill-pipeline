@@ -6,21 +6,22 @@ Do not edit `PLAN.md`, `DESIGN.md`, `RESEARCH.md`, or `README.md` without explic
 
 ## Project: Pripton Skill Pipeline
 
-A workflow system that turns a markdown learning document into a structured skill map (topics + typed relationships) using an LLM. LangGraph orchestration, Anthropic tool-use for structured output, Pydantic validation, networkx cycle detection, Jinja2 reports. CLI-only, single LLM provider (Anthropic).
+A workflow system that turns a markdown learning document into a structured skill map (topics + typed relationships) using an LLM. LangGraph orchestration, tool-use / function-calling for structured output, Pydantic validation, networkx cycle detection, Jinja2 reports. CLI-only. The LLM provider is **Groq** (`llama-3.3-70b-versatile`), behind a swappable `LLMClient` protocol (originally Anthropic, migrated to Groq mid-build — see DESIGN.md §8).
 
-## Current state (verified 2026-05-28)
+## Current state
 
-The build is **complete** — all 21 steps in the checklist are implemented and committed (latest: `step 19: CI workflow`). `STATUS.md` is **stale** (says 35%); trust the code and git log, not STATUS.md.
+The build is **complete** — all 21 checklist steps implemented and committed, plus post-build hardening (token telemetry, content-cache key, async/checkpointer fixes, bounded extract concurrency, prompt-injection mitigation, a provider-response-parsing test). `STATUS.md` reflects this.
 
-- Source: `src/skillpipeline/` (one file per pipeline stage, mirrors the workflow diagram)
-- `214 tests pass` via `pytest` — no API key needed (LLM mocked at the boundary via `FakeLLMClient`)
-- Per-run output lands in `runs/`; `runs/index.html` is the operator dashboard
+- Source: `src/skillpipeline/` (one file per pipeline stage, mirrors the workflow diagram).
+- **231 tests pass** via `pytest` — no API key needed (LLM mocked at the boundary via `FakeLLMClient`).
+- Per-run output lands in `runs/`; `runs/index.html` is the operator dashboard.
 
 ## Commands
 
-- `python3 -m pytest -q` — full test suite (no API key)
-- `ruff check .` — lint
-- `mypy src` — type check (strict)
-- `python3 -m skillpipeline run samples/clean_roadmap.md` — run the pipeline (needs `ANTHROPIC_API_KEY`)
+- `python3 -m pytest -q` — full test suite (no API key).
+- `ruff check .` — lint (gated in CI).
+- `mypy src` — type check, run locally only (intentionally **not** gated in CI; pre-existing type debt — see `.github/workflows/ci.yml`).
+- `set -a && source .env && set +a` — load `GROQ_API_KEY` (the code does not auto-load `.env`).
+- `python3 -m skillpipeline run samples/clean_roadmap.md` — run the pipeline (needs `GROQ_API_KEY`).
 
-`python` is not on PATH — use `python3`.
+`python` is not on PATH — use `python3`. Run from the repo root.

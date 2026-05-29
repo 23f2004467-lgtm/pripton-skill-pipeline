@@ -24,7 +24,7 @@ This file is split into two halves:
 - Multi-stage pipeline (seven nodes: ingest, extract, merge, human_review, relate, validate, persist) orchestrated by LangGraph with a conditional retry edge (relate→validate) and a conditional human-review interrupt.
 - Per-section parallel extraction via asyncio, with per-section retries internal to the extract node (not graph edges).
 - Pydantic-validated outputs at every stage.
-- Anthropic API with tool-use for structured output.
+- Groq API (`llama-3.3-70b-versatile`) with tool-use for structured output. Originally Anthropic; migrated mid-build, see DESIGN.md Section 8.
 - Content-hash caching for idempotency.
 - Three test inputs (clean, messy, adversarial) with committed sample outputs.
 - Per-run HTML report (input + skill-map graph + execution log + validation events + cost).
@@ -112,7 +112,7 @@ pripton-skill-pipeline/
 ├── pyproject.toml                   # Project config (deps, ruff, mypy, pytest)
 ├── .python-version                  # 3.11
 ├── .gitignore                       # Excludes runs/, .cache/, .env, etc.
-├── .env.example                     # ANTHROPIC_API_KEY=...
+├── .env.example                     # GROQ_API_KEY=...
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                   # ruff + mypy + pytest
@@ -122,7 +122,7 @@ pripton-skill-pipeline/
 │       ├── __main__.py              # `python -m skillpipeline` CLI dispatch
 │       ├── cli.py                   # Argparse / Typer command definitions
 │       ├── models.py                # Pydantic models + LangGraph State TypedDict
-│       ├── llm.py                   # Anthropic client wrapper with tool-use
+│       ├── llm.py                   # Groq client wrapper with tool-use
 │       ├── ingest.py                # Stage 1 node
 │       ├── extract.py               # Stage 2 node (async fan-out)
 │       ├── merge.py                 # Stage 3 node
@@ -176,7 +176,7 @@ pripton-skill-pipeline/
 **Runtime:**
 - `langgraph` — state-graph orchestration
 - `langgraph-checkpoint-sqlite` — `SqliteSaver` for durable state
-- `anthropic` — official Anthropic SDK
+- `groq` — official Groq SDK (migrated from `anthropic` mid-build; see DESIGN.md Section 8)
 - `pydantic` (>=2) — validation + JSON Schema generation
 - `networkx` — graph algorithms (cycle detection, topo sort)
 - `structlog` — structured JSON logging
@@ -189,7 +189,7 @@ pripton-skill-pipeline/
 - `ruff` — linter
 - `mypy` — static type checker
 
-Anything outside this list — including the broader `langchain` package, `tenacity`, `loguru`, `langsmith`, `langchain-community`, FastAPI, Flask, requests, httpx, openai — is out of scope and must not be added. See Section 14.
+Anything outside this list — including the broader `langchain` package, `tenacity`, `loguru`, `langsmith`, `langchain-community`, FastAPI, Flask, requests, httpx, openai, anthropic — is out of scope and must not be added. See Section 14.
 
 ---
 
@@ -345,13 +345,13 @@ For each stage: purpose, input, output, LLM contract (if any), validation, retry
 All LLM-calling stages share configuration declared as constants in `src/skillpipeline/llm.py`:
 
 ```python
-MODEL = "claude-sonnet-4-5"            # Pin to the explicit version string at build time.
+MODEL = "llama-3.3-70b-versatile"      # Groq's most capable Llama model with tool-use support.
 TEMPERATURE = 0.0                      # Determinism; same input → (almost) same output.
 MAX_TOKENS = 4096                      # Per-response cap.
 
-# Cost rates — verify against current Anthropic pricing at build time.
-INPUT_COST_PER_MTOK = 3.00             # USD per million input tokens
-OUTPUT_COST_PER_MTOK = 15.00           # USD per million output tokens
+# Cost rates — Groq free tier. Update if running on Groq paid tier.
+INPUT_COST_PER_MTOK = 0.00             # USD per million input tokens
+OUTPUT_COST_PER_MTOK = 0.00            # USD per million output tokens
 ```
 
 Cost computation:
@@ -362,7 +362,7 @@ cost_usd = (input_tokens / 1_000_000) * INPUT_COST_PER_MTOK \
 
 Every LLM call records `input_tokens`, `output_tokens`, and computed `cost_usd` into a `StageTelemetry` entry. Aggregates roll up to `RunMetadata.total_cost_usd` and into the runs-index banner.
 
-The model and rates are constants, not configuration. If they need to change, the agent edits these constants — the change is one place, surface area is small. Multi-provider abstraction is out of scope.
+The model and rates are constants, not configuration. If they need to change, the agent edits these constants — the change is one place, surface area is small. Multi-provider abstraction is out of scope at the constant level; however, the LLM call itself is gated by the `LLMClient` protocol, which is what made the mid-build migration from Anthropic to Groq (see DESIGN.md Section 8) a localized change rather than a cross-cutting one.
 
 ### 5.1 Stage 1 — `ingest`
 
@@ -433,7 +433,7 @@ User prompt for extract (`prompts/extract_topics.txt`, templated):
 - If `extract_feedback[section_id]` is present (retry case), include it verbatim under a "Previous attempt failed validation with this error" header.
 
 **Validation (per section, inside the extract node).**
-- The Anthropic response must contain exactly one `tool_use` block.
+- The Groq response must contain exactly one `tool_use` block.
   - If text-only (no `tool_use`), validation failure with code `MISSING_TOOL_USE` and feedback `"You must respond by calling the record_topics tool, not in free-form text."`
   - If multiple `tool_use` blocks are present, validation failure with code `MULTIPLE_TOOLS` and feedback `"You must call the record_topics tool exactly once."` The API permits multiple tool_use blocks; our prompt discourages but doesn't prevent it.
   - If the `tool_use` block names a tool other than `record_topics`, validation failure with code `WRONG_TOOL` and feedback `"You must call the record_topics tool, not <other_name>."`
@@ -767,7 +767,7 @@ python -m skillpipeline cache clear
 - Runs in `awaiting_review` state are NOT cached until resumed and completed.
 - `--no-cache` flag bypasses both read and write.
 
-**Determinism.** Anthropic API calls use `temperature=0`. This minimizes but does not eliminate variability. The cache is what makes the *observable* behavior deterministic: same input bytes → same output, regardless of LLM-side variability, after the first run.
+**Determinism.** LLM calls use `temperature=0`. This minimizes but does not eliminate variability. The cache is what makes the *observable* behavior deterministic: same input bytes → same output, regardless of LLM-side variability, after the first run.
 
 **Idempotency vs caching — interview answer.** Idempotency is a property of the operation: applying it N times has the same effect as applying it once. Caching is one *mechanism* that achieves this. The cache here is keyed by input content, not by request ID; it's a *content-addressed* cache. Two distinct request IDs with the same input content produce the same output via the cache. That is idempotency in its strict sense.
 
@@ -777,7 +777,7 @@ python -m skillpipeline cache clear
 
 ### 11.1 What's tested without an API key
 
-Everything except live LLM calls. The `llm.py` module exposes an abstract `LLMClient` protocol and a concrete `AnthropicLLMClient` implementation. Tests inject a `FakeLLMClient` that returns canned responses from `tests/fixtures/*.json`.
+Everything except live LLM calls. The `llm.py` module exposes an abstract `LLMClient` protocol and a concrete `GroqLLMClient` implementation. Tests inject a `FakeLLMClient` that returns canned responses from `tests/fixtures/*.json`.
 
 ### 11.2 Test list
 
@@ -817,7 +817,7 @@ Each step is an atomic unit of work for the coding agent. **Implement one step, 
 
 - [ ] **Step 1 — Project skeleton.** Create directory structure (Section 3), `pyproject.toml` with all dependencies pinned to current major versions, `.gitignore`, `.env.example`, `.python-version`, empty `__init__.py` files. No source code yet.
 - [ ] **Step 2 — Models.** Implement `src/skillpipeline/models.py` per Section 4. Add `tests/test_models.py` covering every validator. CI not yet wired.
-- [ ] **Step 3 — LLM client wrapper.** Implement `src/skillpipeline/llm.py` with an `LLMClient` Protocol, an `AnthropicLLMClient` concrete class (uses `anthropic` SDK with tool-use, reads `ANTHROPIC_API_KEY` from env), and a `FakeLLMClient` that returns fixture data. Transport-level retries implemented inline (no external retry library): max 5 attempts, exponential backoff with jitter, base delay 1s; retried only on `anthropic.APIStatusError` with status >= 500 or `anthropic.RateLimitError`. All other exceptions propagate immediately.
+- [ ] **Step 3 — LLM client wrapper.** Implement `src/skillpipeline/llm.py` with an `LLMClient` Protocol, a `GroqLLMClient` concrete class (uses `groq` SDK with tool-use, reads `GROQ_API_KEY` from env), and a `FakeLLMClient` that returns fixture data. Transport-level retries implemented inline (no external retry library): max 5 attempts, exponential backoff with jitter, base delay 1s; retried only on rate-limit errors and 5xx status errors. All other exceptions propagate immediately. (Original spec used Anthropic; migrated mid-build, see DESIGN.md Section 8.)
 - [ ] **Step 4 — Ingest stage.** Implement `src/skillpipeline/ingest.py` per Section 5.1. Implement section splitting carefully. Add `tests/test_ingest.py`.
 - [ ] **Step 5 — Extract stage.** Implement `src/skillpipeline/extract.py` per Section 5.2. Async fan-out via `asyncio.gather` inside the node function. Include the prompt files at `prompts/system.txt` and `prompts/extract_topics.txt`. Tests use `FakeLLMClient`.
 - [ ] **Step 6 — Merge stage.** Implement `src/skillpipeline/merge.py` per Section 5.3. Add `tests/test_merge.py` covering dedup and conflict resolution.
@@ -835,7 +835,7 @@ Each step is an atomic unit of work for the coding agent. **Implement one step, 
 - [ ] **Step 18 — End-to-end test.** Add `tests/test_pipeline_e2e.py` covering clean / messy / adversarial flows with the `FakeLLMClient`.
 - [ ] **Step 19 — CI.** Add `.github/workflows/ci.yml` per Section 11.3. Ensure all checks pass locally first.
 - [ ] **Step 20 — Sample inputs.** Add the three markdown files to `samples/` per the inputs described in DESIGN.md (sourced separately).
-- [ ] **Step 21 — Live run pass.** Run `python -m skillpipeline run samples/clean_roadmap.md` and the other two against the real Anthropic API. Commit the resulting `runs/` outputs for the reviewer. Capture screenshots of the report and index for DESIGN.md.
+- [ ] **Step 21 — Live run pass.** Run `python -m skillpipeline run samples/clean_roadmap.md` and the other two against the real Groq API. Commit the resulting `runs/` outputs for the reviewer. Capture screenshots of the report and index for DESIGN.md.
 
 ---
 
@@ -849,7 +849,7 @@ Quick reference for Dheeraj. Each decision below has a one-paragraph defense.
 
 **Why not Temporal.** Temporal is the right answer at production scale for durable execution — and I'd reach for it if workflows ran for hours or days with strict durability across crashes. For a prototype processing one document at a time, Temporal's infrastructure cost (separate server, SDK ergonomics) outweighs its benefits.
 
-**Why Pydantic and tool-use instead of free-text JSON.** Anthropic's tool-use forces the model output to conform to a declared JSON Schema; Pydantic generates the schema and validates the parsed result. Two layers of structural protection. The remaining failure mode — schema-valid but business-rule-invalid output — is handled by Stage 6's business-rule validators.
+**Why Pydantic and tool-use instead of free-text JSON.** Tool-use (Groq's OpenAI-compatible function-calling) forces the model output to conform to a declared JSON Schema; Pydantic generates the schema and validates the parsed result. Two layers of structural protection. The remaining failure mode — schema-valid but business-rule-invalid output — is handled by Stage 6's business-rule validators.
 
 **Why retry-with-feedback rather than just retry.** Plain retry assumes the failure was transient. Validation failures are not transient — the LLM will likely make the same mistake unless given the specific error. Including the validation error in the next prompt is a form of self-correction; in practice it usually succeeds on attempt 2.
 
@@ -877,7 +877,7 @@ Quick reference for Dheeraj. Each decision below has a one-paragraph defense.
 - Do not add a web server, FastAPI, Flask, etc.
 - Do not add Docker, docker-compose.
 - Do not add a vector store, embedding model, or RAG.
-- Do not add additional LLM providers beyond Anthropic.
+- Do not add additional LLM providers beyond Groq. (Anthropic was the original provider; we migrated to Groq mid-build. Anthropic is now also denied to prevent accidental reintroduction.)
 - Do not add OpenTelemetry. structlog only.
 - Do not refactor the architecture mid-build. If a step seems wrong, stop and surface it; don't quietly redesign.
 - Do not implement steps out of order.

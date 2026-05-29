@@ -6,10 +6,10 @@ this module. The stages still define tools in the `name`/`description`/
 `input_schema` shape; `_to_groq_tool` translates that into Groq's function form.
 """
 
+import asyncio
 import json
 import os
 import random
-import time
 from typing import Any, NamedTuple, Optional, Protocol, cast
 
 from groq import (
@@ -228,9 +228,11 @@ class GroqLLMClient:
                 last_error = e
                 # Retry network errors
 
-            # Exponential backoff with jitter: base * 2^attempt + random(0, 0.5)
+            # Exponential backoff with jitter: base * 2^attempt + random(0, 0.5).
+            # await (not time.sleep) so retries don't block the event loop while
+            # other sections extract concurrently.
             delay = 1.0 * (2**attempt) + random.uniform(0, 0.5)
-            time.sleep(delay)
+            await asyncio.sleep(delay)
 
         # All retries exhausted
         raise TransportError("Transport retries exhausted after 5 attempts") from last_error

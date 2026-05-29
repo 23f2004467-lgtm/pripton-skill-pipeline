@@ -78,10 +78,10 @@ When in doubt, the spec wins; when the spec is silent, ask.
 | `instructor`, `pydantic-ai`, `marvin` | These wrap the tool-use API we are deliberately using directly. The directness is the point. |
 | `guardrails` | The validation layer is intentionally in our own code so the rules are visible. |
 | `fastapi`, `flask`, `starlette`, `uvicorn` | No web server. The interface is a CLI. |
-| `httpx`, `requests`, `aiohttp` | The Anthropic SDK is our HTTP client. We do not make raw HTTP calls. |
+| `httpx`, `requests`, `aiohttp` | The Groq SDK is our HTTP client. We do not make raw HTTP calls. |
 | `redis`, `celery`, `rq`, `dramatiq`, `kafka-python` | No queue. Single-process workflow. |
 | `sqlalchemy`, `psycopg2`, `pymongo` | No database. Filesystem state. The one exception is `langgraph-checkpoint-sqlite` which is the LangGraph checkpointer. |
-| `openai`, `google-generativeai`, `litellm`, `cohere` | Single LLM provider: Anthropic. |
+| `openai`, `anthropic`, `google-generativeai`, `litellm`, `cohere` | Single LLM provider: Groq (migrated from Anthropic mid-build; see DESIGN.md Section 8). |
 | `pytest-mock`, `responses`, `respx`, `vcr.py` | The LLM client is mocked at the application boundary via `FakeLLMClient`. No HTTP-level mocking needed. |
 | `docker`, `kubernetes` | Out of scope. |
 | `streamlit`, `gradio` | No UI. |
@@ -174,6 +174,7 @@ A few non-obvious things the agent should know:
 - **The interviewer is not deeply technical.** The README and DESIGN.md are written to be read by them. Do not introduce technical jargon into those files. The agent may not edit them anyway (see "How to work with PLAN.md" rule 6).
 - **HITL is the spine, not a feature.** The conditional human-review interrupt is the most defensible piece of the architecture. Do not implement it as a quick `input()` call — it must use LangGraph's `interrupt()` + `SqliteSaver` per Section 5.4.
 - **Observability is a deliverable.** The runs-index HTML page is the operator-facing artifact. Treat it as a first-class output, not a nice-to-have.
+- **The LLM provider has changed once mid-build.** We initially built against Anthropic (`claude-sonnet-4-5`), then migrated to Groq (`llama-3.3-70b-versatile`) when API costs became a constraint. The migration was contained to `llm.py` and its tests, which is the validation of the `LLMClient` protocol earning its keep. The deny list above reflects the current state — `anthropic` is now denied because we don't want it accidentally reintroduced; `groq` is the only allowed provider until a new explicit spec change.
 
 ---
 

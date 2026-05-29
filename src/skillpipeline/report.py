@@ -125,24 +125,31 @@ def _generate_skill_map_mermaid(skill_map: SkillMap) -> str:
     def _node_id(topic_id: str) -> str:
         return f"n_{topic_id}"
 
-    # Build nodes for each topic
+    # This graph shows the prerequisite structure. Rendering every topic spreads
+    # dozens of edge-less nodes across one row and makes the diagram unreadable,
+    # so we include only topics that participate in a prerequisite relationship.
+    # (All topics remain in skill_map.json and the relationship tables.)
+    prereqs = [rel for rel in skill_map.relationships if rel.type == "prerequisite"]
+    if not prereqs:
+        return f'graph TD\n    Empty["No prerequisite links among {len(skill_map.topics)} topics"]'
+
+    connected_ids: set[str] = set()
+    for rel in prereqs:
+        connected_ids.add(rel.from_id)
+        connected_ids.add(rel.to_id)
+
     nodes = []
     for topic in skill_map.topics:
-        # Escape quotes in topic name
-        safe_name = topic.name.replace('"', "'")
-        nodes.append(f'    {_node_id(topic.id)}["{safe_name} ({topic.difficulty})"]')
+        if topic.id in connected_ids:
+            safe_name = topic.name.replace('"', "'")
+            nodes.append(f'    {_node_id(topic.id)}["{safe_name} ({topic.difficulty})"]')
 
-    # Build edges for prerequisite relationships
-    edges = []
-    for rel in skill_map.relationships:
-        if rel.type == "prerequisite":
-            edges.append(f"    {_node_id(rel.from_id)} ==>|prerequisite| {_node_id(rel.to_id)}")
+    edges = [
+        f"    {_node_id(rel.from_id)} ==>|prerequisite| {_node_id(rel.to_id)}"
+        for rel in prereqs
+    ]
 
-    if not edges:
-        edges.append("    %% No prerequisite relationships")
-
-    mermaid = "graph TD\n" + "\n".join(nodes) + "\n" + "\n".join(edges)
-    return mermaid
+    return "graph TD\n" + "\n".join(nodes) + "\n" + "\n".join(edges)
 
 
 def _generate_non_prereq_relationships(

@@ -318,10 +318,14 @@ def test_mermaid_skill_map_reserved_word_id():
     skill_map = SkillMap(
         source_id="abc123",
         topics=[
+            Topic(id="unit-testing", name="Unit Testing", description="d",
+                  category="qa", difficulty="beginner"),
             Topic(id="end-to-end-testing", name="End-to-End Testing", description="d",
                   category="qa", difficulty="intermediate"),
         ],
-        relationships=[],
+        relationships=[
+            Relationship(from_id="unit-testing", to_id="end-to-end-testing", type="prerequisite"),
+        ],
         metadata=RunMetadata(
             thread_id="test", source_id="abc123",
             started_at="2024-01-01T12:00:00Z", status="complete",
@@ -331,6 +335,7 @@ def test_mermaid_skill_map_reserved_word_id():
     mermaid = _generate_skill_map_mermaid(skill_map)
     # The raw id (which starts with the reserved word "end") is prefixed.
     assert "n_end-to-end-testing[" in mermaid
+    assert "n_unit-testing ==>|prerequisite| n_end-to-end-testing" in mermaid
 
 
 def test_mermaid_pipeline_generation():

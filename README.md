@@ -25,7 +25,7 @@ graph LR
   Validate -->|valid or flagged| Persist
 ```
 
-The pipeline reads a markdown file, splits it on headings, calls the LLM in parallel to extract topics from each section, merges and deduplicates, optionally pauses for human review, asks the LLM to identify prerequisite/related/subtopic relationships between topics, validates the relationships against schema and business rules (no cycles, no dangling references, no self-loops), retries with feedback when validation fails, and persists the final skill map as JSON plus a self-contained HTML report.
+The pipeline reads a markdown file, splits it on headings, calls the LLM in parallel (bounded by a concurrency cap) to extract topics from each section, merges and deduplicates, optionally pauses for human review, asks the LLM to identify prerequisite/related/subtopic relationships between topics, validates the relationships against schema and business rules (no cycles, no dangling references, no self-loops), retries with feedback when validation fails, and persists the final skill map as JSON plus a self-contained HTML report. The document body is passed to the model as delimited, untrusted data (a basic prompt-injection mitigation).
 
 The orchestration is built with **LangGraph** for durable state and conditional flow. Structured LLM output is enforced via **tool-use / function-calling** (Groq's OpenAI-compatible API surface, against `llama-3.3-70b-versatile`) and validated by **Pydantic**. Cycle detection uses **networkx**. The HTML report and the runs-index page use **Jinja2** templates. (The project was originally built against Anthropic and migrated to Groq mid-build — see DESIGN.md Section 8.)
 

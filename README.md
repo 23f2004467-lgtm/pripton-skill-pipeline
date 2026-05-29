@@ -31,6 +31,22 @@ The orchestration is built with **LangGraph** for durable state and conditional 
 
 ---
 
+## Screenshots
+
+**Runs index** — the operator dashboard, regenerated after every run. Per-stage status, retry counts, and cost at a glance (the "monitor workflows at scale" view).
+
+![Runs index](screenshots/runs_index.png)
+
+**Per-run report** — a self-contained HTML report per run: the pipeline diagram (with the human-review interrupt highlighted in orange), token telemetry, validation events, and the skill-map graph.
+
+![Run report](screenshots/report.png)
+
+**Skill map** — extracted topics with difficulty, connected by prerequisite edges (shown here for the `adversarial_prose` sample).
+
+![Skill map](screenshots/skill_map.png)
+
+---
+
 ## Install
 
 Requires Python 3.11+.

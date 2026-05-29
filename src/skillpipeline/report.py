@@ -119,18 +119,24 @@ def _generate_skill_map_mermaid(skill_map: SkillMap) -> str:
     if not skill_map.topics:
         return "graph TD\n    Empty[\"No topics extracted\"]"
 
+    # Mermaid treats node ids that start with a reserved word (e.g. "end", as in
+    # "end-to-end-testing") as that keyword, which breaks the whole graph. Prefix
+    # every id so it is always a safe identifier; the visible label is unaffected.
+    def _node_id(topic_id: str) -> str:
+        return f"n_{topic_id}"
+
     # Build nodes for each topic
     nodes = []
     for topic in skill_map.topics:
         # Escape quotes in topic name
         safe_name = topic.name.replace('"', "'")
-        nodes.append(f'    {topic.id}["{safe_name} ({topic.difficulty})"]')
+        nodes.append(f'    {_node_id(topic.id)}["{safe_name} ({topic.difficulty})"]')
 
     # Build edges for prerequisite relationships
     edges = []
     for rel in skill_map.relationships:
         if rel.type == "prerequisite":
-            edges.append(f"    {rel.from_id} ==>|prerequisite| {rel.to_id}")
+            edges.append(f"    {_node_id(rel.from_id)} ==>|prerequisite| {_node_id(rel.to_id)}")
 
     if not edges:
         edges.append("    %% No prerequisite relationships")

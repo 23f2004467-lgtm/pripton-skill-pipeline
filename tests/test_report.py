@@ -304,10 +304,33 @@ def test_mermaid_skill_map_generation():
 
     mermaid = _generate_skill_map_mermaid(skill_map)
 
+    # Node ids are prefixed (n_) so they never start with a Mermaid reserved word.
     assert "graph TD" in mermaid
-    assert 'a["' in mermaid
-    assert 'b["' in mermaid
-    assert "a ==>|prerequisite| b" in mermaid
+    assert 'n_a["' in mermaid
+    assert 'n_b["' in mermaid
+    assert "n_a ==>|prerequisite| n_b" in mermaid
+
+
+def test_mermaid_skill_map_reserved_word_id():
+    """Topic ids starting with a reserved word (e.g. 'end') must not break the graph."""
+    from skillpipeline.report import _generate_skill_map_mermaid
+
+    skill_map = SkillMap(
+        source_id="abc123",
+        topics=[
+            Topic(id="end-to-end-testing", name="End-to-End Testing", description="d",
+                  category="qa", difficulty="intermediate"),
+        ],
+        relationships=[],
+        metadata=RunMetadata(
+            thread_id="test", source_id="abc123",
+            started_at="2024-01-01T12:00:00Z", status="complete",
+        ),
+    )
+
+    mermaid = _generate_skill_map_mermaid(skill_map)
+    # The raw id (which starts with the reserved word "end") is prefixed.
+    assert "n_end-to-end-testing[" in mermaid
 
 
 def test_mermaid_pipeline_generation():

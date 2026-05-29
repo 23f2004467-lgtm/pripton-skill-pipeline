@@ -229,11 +229,10 @@ def make_relate_node(llm_client: LLMClient):
         A LangGraph node function.
     """
 
-    # Load prompts
-    system_prompt = Path("src/skillpipeline/prompts/system.txt").read_text()
-    user_prompt_template = Path(
-        "src/skillpipeline/prompts/extract_relationships.txt"
-    ).read_text()
+    # Load prompts (package data; resolve relative to this file, not the cwd)
+    prompts_dir = Path(__file__).parent / "prompts"
+    system_prompt = (prompts_dir / "system.txt").read_text()
+    user_prompt_template = (prompts_dir / "extract_relationships.txt").read_text()
 
     async def relate_node(state: PipelineState) -> dict:
         """LangGraph node function for relate stage."""

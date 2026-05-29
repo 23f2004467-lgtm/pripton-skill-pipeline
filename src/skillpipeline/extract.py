@@ -9,6 +9,14 @@ from skillpipeline.llm import LLMClient, TokenUsage, ToolCall
 from skillpipeline.models import Section, StageTelemetry, Topic, ValidationEvent
 from skillpipeline.retry import MAX_EXTRACT_ATTEMPTS, format_feedback
 
+# Cap concurrent LLM calls so a many-section document doesn't fire every request
+# at once and trip provider rate limits. The transport layer backs off and retries
+# whatever is queued behind the semaphore.
+MAX_EXTRACT_CONCURRENCY = 5
+
+# Prompts are package data; resolve relative to this file, not the cwd.
+PROMPTS_DIR = Path(__file__).parent / "prompts"
+
 # Tool definition for extract (Section 5.2)
 EXTRACT_TOPICS_TOOL = {
     "name": "record_topics",
@@ -255,20 +263,21 @@ async def extract_sections_parallel(
     Returns:
         (all_topics, retry_counts, feedback_messages, all_validation_events) tuple.
     """
-    # Build tasks for each section, passing in any existing feedback
-    tasks = [
-        extract_one_section(
-            section=section,
-            llm_client=llm_client,
-            system_prompt=system_prompt,
-            user_prompt_template=user_prompt_template,
-            feedback=initial_feedback.get(section.id),
-        )
-        for section in sections
-    ]
+    # Bound concurrency: process sections in parallel but at most
+    # MAX_EXTRACT_CONCURRENCY at a time, so we don't burst every request at once.
+    semaphore = asyncio.Semaphore(MAX_EXTRACT_CONCURRENCY)
 
-    # Run all extractions in parallel
-    results = await asyncio.gather(*tasks)
+    async def _extract_bounded(section: Section):
+        async with semaphore:
+            return await extract_one_section(
+                section=section,
+                llm_client=llm_client,
+                system_prompt=system_prompt,
+                user_prompt_template=user_prompt_template,
+                feedback=initial_feedback.get(section.id),
+            )
+
+    results = await asyncio.gather(*[_extract_bounded(section) for section in sections])
 
     # Aggregate results
     all_topics: list[Topic] = []
@@ -301,8 +310,8 @@ def make_extract_node(llm_client: LLMClient):
     """
 
     # Load prompts
-    system_prompt = Path("src/skillpipeline/prompts/system.txt").read_text()
-    user_prompt_template = Path("src/skillpipeline/prompts/extract_topics.txt").read_text()
+    system_prompt = (PROMPTS_DIR / "system.txt").read_text()
+    user_prompt_template = (PROMPTS_DIR / "extract_topics.txt").read_text()
 
     async def extract_node(state: dict) -> dict:
         """LangGraph node function for extract stage."""

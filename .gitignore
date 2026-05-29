@@ -35,3 +35,4 @@ htmlcov/
 
 # Type checking
 .mypy_cache/
+.gstack/

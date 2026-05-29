@@ -27,7 +27,7 @@ graph LR
 
 The pipeline reads a markdown file, splits it on headings, calls the LLM in parallel to extract topics from each section, merges and deduplicates, optionally pauses for human review, asks the LLM to identify prerequisite/related/subtopic relationships between topics, validates the relationships against schema and business rules (no cycles, no dangling references, no self-loops), retries with feedback when validation fails, and persists the final skill map as JSON plus a self-contained HTML report.
 
-The orchestration is built with **LangGraph** for durable state and conditional flow. Structured LLM output is enforced via Anthropic's **tool-use** API and validated by **Pydantic**. Cycle detection uses **networkx**. The HTML report and the runs-index page use **Jinja2** templates.
+The orchestration is built with **LangGraph** for durable state and conditional flow. Structured LLM output is enforced via **tool-use / function-calling** (Groq's OpenAI-compatible API surface, against `llama-3.3-70b-versatile`) and validated by **Pydantic**. Cycle detection uses **networkx**. The HTML report and the runs-index page use **Jinja2** templates. (The project was originally built against Anthropic and migrated to Groq mid-build — see DESIGN.md Section 8.)
 
 ---
 
@@ -40,7 +40,7 @@ git clone <this-repo>
 cd pripton-skill-pipeline
 pip install -e ".[dev]"
 cp .env.example .env
-# Edit .env and set ANTHROPIC_API_KEY
+# Edit .env and set GROQ_API_KEY
 ```
 
 The tests do not need an API key (the LLM client is mocked at the boundary):
@@ -151,10 +151,10 @@ The source layout, with one Python file per stage, mirrors the workflow diagram.
 ```
 pytest -v                # All tests, no API key needed
 ruff check .             # Lint
-mypy src                 # Type check
+mypy src                 # Type check (local only — not gated in CI; see ci.yml)
 ```
 
-GitHub Actions runs the same three checks on every push and pull request.
+GitHub Actions runs lint + tests on every push and pull request. mypy runs locally during development but is not gated in CI due to pre-existing type debt (documented in DESIGN.md Section 8).
 
 ---
 

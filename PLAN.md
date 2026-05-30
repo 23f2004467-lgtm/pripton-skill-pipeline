@@ -769,7 +769,7 @@ python -m skillpipeline cache clear
 
 **Determinism.** LLM calls use `temperature=0`. This minimizes but does not eliminate variability. The cache is what makes the *observable* behavior deterministic: same input bytes → same output, regardless of LLM-side variability, after the first run.
 
-**Idempotency vs caching — interview answer.** Idempotency is a property of the operation: applying it N times has the same effect as applying it once. Caching is one *mechanism* that achieves this. The cache here is keyed by input content, not by request ID; it's a *content-addressed* cache. Two distinct request IDs with the same input content produce the same output via the cache. That is idempotency in its strict sense.
+**Idempotency vs caching — interview answer.** Idempotency is a property of the operation: applying it N times has the same effect as applying it once. Caching is one *mechanism* that achieves this. The cache here is keyed by input content, not by request ID; it's a *content-addressed* cache. Two distinct request IDs with the same input content produce the same output via the cache. Be precise out loud: this is memoization of the *value* — byte-identical input returns the same cached skill map — not a strictly side-effect-free operation, because a cache hit still creates a run directory and refreshes the dashboard, and the key is the exact bytes (a whitespace change is a miss). The generation itself isn't deterministic; the cache is what makes the *observable* answer stable.
 
 ---
 
@@ -865,7 +865,7 @@ Quick reference for Dheeraj. Each decision below has a one-paragraph defense.
 
 **Why no Docker / no FastAPI / no DB.** Each would add setup friction without earning its complexity at this scale. The prototype is a single CLI with file-system state. Production deployment is a research-doc concern, not a prototype concern.
 
-**Why three test inputs (clean / messy / adversarial).** The clean one demonstrates the happy path. The messy one exercises the retry-with-feedback loop. The adversarial one exercises flag-don't-fail. Each is committed with its expected output so the reviewer sees the system handle three different shapes of input. This is the substance of the Results & Observations section.
+**Why three test inputs (clean / messy / adversarial).** The clean one demonstrates the happy path. The messy one was chosen to stress the retry-with-feedback loop and the adversarial one to stress flag-don't-fail. Note the honest outcome (DESIGN §8): in the live runs the model handled all three cleanly — the messy input visibly exercised the *merge* layer rather than retries, and nothing flagged — so the corrective paths are demonstrated by the test suite and a forced `--always-review` run, not by these three samples firing them. Each sample is committed with its output so the reviewer sees the system handle three shapes of input. This is the substance of the Results & Observations section.
 
 ---
 

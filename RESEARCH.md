@@ -224,7 +224,7 @@ A short bridge from the prototype to a hypothetical production system, in priori
 
 **2. Confidence-driven HITL.** Replace the binary "any retry → review" trigger with a confidence score derived from the judge model's assessment, model-reported logprobs, or sampling-based agreement. Review threshold becomes tunable. Reviewer load becomes predictable.
 
-**3. Durable execution beyond minutes.** Move from LangGraph's SqliteSaver to Temporal. Workflows survive process crashes, can be paused for days, can be inspected and intervened on through Temporal's UI. The operational story becomes drastically better at scale.
+**3. Durable execution beyond minutes.** Move from LangGraph's AsyncSqliteSaver to Temporal. Workflows survive process crashes, can be paused for days, can be inspected and intervened on through Temporal's UI. The operational story becomes drastically better at scale.
 
 **4. Cross-document concept resolution.** Embed every extracted topic, look up against a vector store of previously-seen topics, deduplicate at the system level. Unlocks the value of building a knowledge base across many documents. Today each document is independent; at scale, the same topic ("React Hooks") should resolve to one canonical entity.
 

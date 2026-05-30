@@ -71,9 +71,9 @@ pytest
 
 Three sample inputs are in `samples/`:
 
-- `clean_roadmap.md` — structured backend dev roadmap, exercises the happy path
-- `messy_tutorial.md` — narrative React Hooks tutorial, exercises retry-with-feedback
-- `adversarial_prose.md` — engineering essay with no structure, exercises flag-don't-fail
+- `clean_roadmap.md` — structured backend dev roadmap; the happy path
+- `messy_tutorial.md` — loosely structured React Hooks tutorial; chosen to stress the retry-with-feedback path, though in practice the model handled it cleanly and what actually fired was the merge layer's dedup + difficulty-conflict handling (see `DESIGN.md` section 8)
+- `adversarial_prose.md` — an engineering essay with almost no structure; chosen as a worst case meant to trigger flag-don't-fail, though in practice it still produced clean topics and completed (see `DESIGN.md` section 8)
 
 Run one:
 
@@ -118,7 +118,7 @@ Edit the JSON file (remove, add, or modify topics), then resume:
 python -m skillpipeline resume run_20260527-143022_a1b2c3
 ```
 
-The graph state was persisted to `runs/{thread_id}/state.sqlite` via LangGraph's `SqliteSaver`, so the resume picks up exactly where the interrupt happened, with your edits as the new approved topic set.
+The graph state was persisted to `runs/{thread_id}/state.sqlite` via LangGraph's `AsyncSqliteSaver`, so the resume picks up exactly where the interrupt happened, with your edits as the new approved topic set.
 
 ---
 
@@ -136,9 +136,9 @@ python -m skillpipeline cache clear              # Clear the content-hash cache
 
 ## Idempotency
 
-The system computes a SHA-256 hash of the input bytes and caches the output at `.cache/{hash}.json`. Re-running the same input is a cache hit — no LLM calls, no cost, deterministic answer. Cache is bypassed with `--no-cache` and is not populated for flagged runs.
+The system computes a SHA-256 hash of the input bytes and caches the output at `.cache/{hash}.json`. Re-running the same input is a cache hit — no LLM calls, no cost, and the same skill map comes back. (The model's generation is *not* deterministic, even at `temperature=0`; the cache is what makes the *observable* answer stable for repeated identical input.) Cache is bypassed with `--no-cache` and is not populated for flagged runs.
 
-This is content-addressed caching, which is what makes the pipeline strictly idempotent: two callers sending the same input content always get the same output, regardless of when or where.
+This is content-addressed caching: byte-identical input always returns the same cached skill map, regardless of when or where. Two honest caveats so the claim isn't oversold: the key is the SHA-256 of the *raw bytes*, so even a whitespace or line-ending difference is a cache miss; and a cache hit still creates a new run directory and refreshes the dashboard — so it's memoization of the *value*, not a side-effect-free idempotent operation.
 
 ---
 

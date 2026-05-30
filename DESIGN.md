@@ -117,7 +117,7 @@ The system computes a SHA-256 hash of the input bytes on ingest. This hash is th
 
 When a run begins, the cache is checked. On a hit, the cached skill map is used as the answer; no LLM calls are made; a new `runs/{thread_id}/` directory is still created so the runs-index reflects the request, but with `cache_hit=true` recorded. The operator sees the run completed, knows it was cached, and incurs zero cost.
 
-Two runs with the same input content thus collapse to the same answer, regardless of when or where they are invoked. That is idempotency in its strict sense: the operation can be applied N times and produce the same observable result.
+Two runs with byte-identical input thus return the same cached skill map, regardless of when or where they are invoked. Two honest qualifications so this isn't oversold: it is memoization of the *value*, not a side-effect-free operation — as noted above, a cache hit still creates a run directory and refreshes the dashboard — and the key is the exact input bytes, so a whitespace or line-ending difference is a cache miss. The model's generation is non-deterministic even at `temperature=0`; the cache is what makes the *observable* answer stable for repeated identical input, which is the property we actually want here.
 
 Idempotency and caching are not synonyms. Caching is one mechanism that achieves idempotency. The cache here is content-addressed, not request-ID-addressed, which is why it works as an idempotency mechanism rather than just a performance optimization. Two callers who happen to send the same content get the same answer even though they have no shared request ID.
 
@@ -152,7 +152,7 @@ The prototype handles one document at a time in a single process. At scale, the 
 
 - **Concurrency across runs.** Many documents arriving simultaneously would saturate API rate limits. A queue with concurrency limits — Celery, RQ, or a managed service like SQS — would replace the inline CLI invocation.
 - **Cross-document concept deduplication.** Today each document's skill map is independent. At scale, the same topic ("React Hooks") extracted from different documents should resolve to a single canonical entity. This requires embeddings and a vector store (Qdrant, pgvector, Pinecone) for semantic deduplication.
-- **Durable execution beyond minutes.** LangGraph's SqliteSaver is fine for human review that takes hours. Workflows spanning days, with strict crash-recovery semantics, would benefit from Temporal or a similar durable-execution platform.
+- **Durable execution beyond minutes.** LangGraph's AsyncSqliteSaver is fine for human review that takes hours. Workflows spanning days, with strict crash-recovery semantics, would benefit from Temporal or a similar durable-execution platform.
 - **Centralized observability.** Today, the runs-index HTML page is the operator dashboard. At scale, structured logs would ship to a SIEM (Datadog, Honeycomb, Grafana Loki), traces to an OpenTelemetry collector, and LLM-specific telemetry to LangSmith, Langfuse, or Phoenix.
 - **Cost control.** A flat per-MTok rate stops scaling reasoning past a certain point. At volume, you'd want model routing (cheaper models for easy sections, premium models for hard ones), budget alerts, and per-tenant cost attribution.
 - **Multi-tenancy.** Today there is one set of files. A multi-tenant system would partition runs, caches, and credentials by tenant.
@@ -189,7 +189,7 @@ This section is the one most likely to be probed in a review. Every decision her
 
 **No vector store, no cross-document concept resolution.** Within a single document, duplicates are merged by exact name match. Across documents, the same concept extracted from two sources will appear as two unrelated topics. Resolving this requires embeddings. At single-document scale, the gap is invisible.
 
-**No persistent queue or workflow durability beyond minutes.** LangGraph's SqliteSaver handles human-review checkpoints that take hours. Workflows that need to survive process crashes for days, or that need centralized job tracking, would benefit from Temporal. Discussed in RESEARCH.md.
+**No persistent queue or workflow durability beyond minutes.** LangGraph's AsyncSqliteSaver handles human-review checkpoints that take hours. Workflows that need to survive process crashes for days, or that need centralized job tracking, would benefit from Temporal. Discussed in RESEARCH.md.
 
 **Filesystem state, no database.** All persistent state lives in `runs/` and `.cache/` directories. A multi-machine deployment would replace this with object storage (S3) for files and a database for run metadata. For a single-machine prototype, the filesystem is the right answer.
 
@@ -228,7 +228,7 @@ All runs used the Groq `llama-3.3-70b-versatile` model at `temperature=0` with t
 
 Across the three substantive samples, none of the retry, interrupt, or flag paths fired. Groq's tool-use enforcement produced schema-valid output on the first attempt for every section — including the adversarial prose, which still yielded seven coherent topics rather than flagging. The reliability scaffolding we built (retry-with-feedback, conditional human-review interrupt, flag-don't-fail at max retries) is exercised in unit tests with `FakeLLMClient` against synthetic malformed responses, and in one integration test that runs the real graph with synthetic LLM responses, but the live runs did not require any of it.
 
-This is, from a delivery perspective, a "system worked too well to demonstrate its own reliability features" problem. We chose not to chase a contrived live failure (a less reliable model, more pathological input) and instead document the gap directly here. The `--always-review` run on the fourth row above was added specifically to produce a committed artifact in which the HITL machinery visibly fires — the interrupt triggers, `topics_for_review.json` is written, and a separate `resume` command continues the workflow from the SqliteSaver checkpoint.
+This is, from a delivery perspective, a "system worked too well to demonstrate its own reliability features" problem. We chose not to chase a contrived live failure (a less reliable model, more pathological input) and instead document the gap directly here. The `--always-review` run on the fourth row above was added specifically to produce a committed artifact in which the HITL machinery visibly fires — the interrupt triggers, `topics_for_review.json` is written, and a separate `resume` command continues the workflow from the AsyncSqliteSaver checkpoint.
 
 ### The other interesting observation: the merge layer did real work
 
@@ -286,7 +286,7 @@ Concretely, in priority order:
 
 3. **Cross-document concept resolution.** Today each document produces an independent skill map. At scale, "React Hooks" extracted from a tutorial and "React Hooks" extracted from a roadmap should resolve to the same canonical topic across the system. This requires embeddings and a vector store for topic deduplication — out of scope for a single-document prototype but the natural next architectural beat.
 
-4. **Durable execution at workflow scale.** LangGraph's SqliteSaver gives us per-process durability — enough for a human review that takes hours. A workflow that needs to survive process crashes for days, or that needs centralized job tracking across machines, would benefit from Temporal or a similar durable-execution platform. We discuss this further in `RESEARCH.md`.
+4. **Durable execution at workflow scale.** LangGraph's AsyncSqliteSaver gives us per-process durability — enough for a human review that takes hours. A workflow that needs to survive process crashes for days, or that needs centralized job tracking across machines, would benefit from Temporal or a similar durable-execution platform. We discuss this further in `RESEARCH.md`.
 
 5. **Real centralized observability.** The runs-index HTML page is the operator dashboard for the prototype. At fleet scale, structured logs would ship to a SIEM, traces to an OpenTelemetry collector, and LLM-specific telemetry to LangSmith or Langfuse. The current stack provides the data; only the destinations would change.
 
@@ -320,7 +320,7 @@ Concretely, in priority order:
 
 **SHA-256** — A cryptographic hash function. Used here to compute the idempotency key from input bytes.
 
-**SqliteSaver** — LangGraph's built-in checkpointer that persists state to a SQLite file. Used here for durable human-review interrupts.
+**AsyncSqliteSaver** — LangGraph's async SQLite checkpointer (from `langgraph-checkpoint-sqlite`, backed by `aiosqlite`) that persists graph state to a SQLite file. Used here for durable human-review interrupts; the async variant is required because the extract and relate nodes are async. The synchronous `SqliteSaver` was the original choice and is what bug #3 in Section 8 replaced.
 
 **Temperature** — A language-model sampling parameter. `temperature=0` produces the highest-probability token at each step, minimizing variance.
 
